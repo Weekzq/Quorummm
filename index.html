@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Кворум — помощник учителя</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Кворум</div>
+    <div class="sub">помощник учителя</div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Ученики</h2>
+      <div class="row">
+        <textarea id="names-input" rows="3"
+          placeholder="Вставь список, по одному в строке"></textarea>
+      </div>
+      <div class="row">
+        <button id="add-names" class="btn">Добавить</button>
+        <button id="clear-all" class="btn btn-ghost">Очистить всё</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Присутствие</h2>
+      <ul id="students-list" class="check-list"></ul>
+      <button id="save-presence" class="btn">Сохранить присутствие</button>
+    </section>
+
+    <section class="card">
+      <h2>Команды</h2>
+      <div class="row">
+        <label for="n-groups">Сколько команд</label>
+        <input id="n-groups" type="number" min="2" max="10" value="3">
+        <button id="split" class="btn btn-primary">Разделить на команды</button>
+      </div>
+      <div id="teams" class="teams"></div>
+    </section>
+
+    <section class="card">
+      <h2>Урок</h2>
+      <div class="lesson">
+        <div>
+          <div class="label">Кто отвечает?</div>
+          <div id="picked" class="picked">—</div>
+          <button id="pick" class="btn btn-primary">Выбрать ученика</button>
+        </div>
+        <div>
+          <div class="label">Счёт команд</div>
+          <div id="scores" class="scores"></div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:16px">
+        <textarea id="note" rows="3" placeholder="Заметки урока"></textarea>
+      </div>
+      <button id="save-note" class="btn">Сохранить заметку</button>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Quorum · сделал Никита</span>
+    <span>2026</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
