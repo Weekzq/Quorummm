@@ -6,14 +6,12 @@
   <title>Кворум — помощник учителя</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Жесткое скрытие до загрузки JS, чтобы не было мигания */
     #app-screen { display: none; }
     #login-screen { display: flex; }
   </style>
 </head>
 <body>
 
-  <!-- ЭКРАН ВХОДА -->
   <div id="login-screen" class="login-screen">
     <div class="login-card">
       <div class="login-brand">Кворум</div>
@@ -24,7 +22,6 @@
     </div>
   </div>
 
-  <!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
   <div id="app-screen" class="app">
     <header class="topbar">
       <div class="brand">Кворум</div>
@@ -77,6 +74,27 @@
           <button id="give-badge" class="btn btn-primary">Дать значок</button>
         </div>
         <div id="badges-total" class="badges-total"></div>
+      </section>
+
+      <section class="card">
+        <h2>Личный кабинет</h2>
+        <p class="hint">Нажми на своё имя, чтобы увидеть свои значки и команду.</p>
+        
+        <div id="student-login-list" class="student-login-grid"></div>
+
+        <div id="student-profile" style="display: none; margin-top: 20px;">
+          <button id="profile-back" class="btn btn-ghost" style="margin-bottom: 12px; padding-left: 0;">← Назад к списку</button>
+          <div class="profile-card">
+            <h3 id="profile-name" style="margin-top: 0;"></h3>
+            <p id="profile-team" style="color: var(--muted); margin-bottom: 16px;"></p>
+            
+            <div class="label">Мои значки</div>
+            <div id="profile-badges" class="badges-total" style="margin-bottom: 16px;"></div>
+            
+            <div class="label">Баллы команды</div>
+            <div id="profile-score" style="font-size: 28px; font-weight: 700; color: var(--accent);"></div>
+          </div>
+        </div>
       </section>
 
       <section class="card">
