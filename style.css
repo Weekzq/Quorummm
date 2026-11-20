@@ -7,17 +7,20 @@ body { margin:0; background:var(--bg); color:var(--ink); font-family:system-ui, 
 .card { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:18px; }
 .card h2 { margin:0 0 14px; font-size:20px; }
 .row { display:flex; gap:10px; align-items:center; }
-textarea, input[type="number"], select { padding:10px; border:1px solid var(--line); border-radius:10px; background:#fff; font:inherit; }
-.btn { padding:10px 18px; border-radius:10px; border:1px solid var(--line); background:transparent; cursor:pointer; }
+textarea, input[type="number"], input[type="text"], input[type="password"], select { padding:10px; border:1px solid var(--line); border-radius:10px; background:#fff; font:inherit; width:100%; margin-bottom:8px; }
+textarea:focus, input:focus, select:focus { outline:none; border-color:var(--accent); }
+.btn { padding:10px 18px; border-radius:10px; border:1px solid var(--line); background:transparent; cursor:pointer; font:inherit; white-space:nowrap; }
 .btn-primary { background:var(--accent); color:#fff; border:none; }
 .btn-outline { background:#fff; }
 .check-list { list-style:none; padding:0; margin:0; }
-.check-list li { padding:8px 0; border-bottom:1px solid var(--line); }
+.check-list li { padding:8px 0; border-bottom:1px solid var(--line); display:flex; align-items:center; }
+.check-list input { width:18px; height:18px; margin-right:10px; margin-bottom:0; }
 .teams { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; }
 .team { background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; }
-.badges-picker { display:flex; gap:10px; margin-bottom:16px; }
+.badges-picker { display:flex; gap:10px; margin-bottom:16px; align-items:flex-start; }
+.badges-picker select { margin-bottom:0; }
 .badge-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--line); }
-.badge-chip { background:#eaf1ec; color:var(--accent); padding:4px 8px; border-radius:12px; font-size:13px; margin-right:4px; }
+.badge-chip { background:#eaf1ec; color:var(--accent); padding:4px 8px; border-radius:12px; font-size:13px; margin-right:4px; display:inline-block; margin-bottom:4px;}
 .lesson { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
 .picked { font-size:32px; font-weight:700; margin:10px 0; }
 
@@ -26,10 +29,8 @@ textarea, input[type="number"], select { padding:10px; border:1px solid var(--li
 .login-card { width:100%; max-width:360px; background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:28px; display:flex; flex-direction:column; gap:14px; }
 .login-brand { font-size:24px; font-weight:700; text-align:center; }
 .login-sub { text-align:center; color:var(--muted); font-size:13px; margin-top:-8px; }
-.login-card input { padding:12px; border:1px solid var(--line); border-radius:10px; }
-.login-error { color:red; font-size:13px; text-align:center; min-height:18px; }
-.student-login-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.student-login-btn { padding:10px; border:1px solid var(--line); border-radius:8px; background:#fff; cursor:pointer; }
-.student-login-btn:hover { border-color:var(--accent); }
+.login-card input { padding:12px; border:1px solid var(--line); border-radius:10px; margin-bottom:0; }
+.login-error { color:#a4453b; font-size:13px; text-align:center; min-height:18px; }
 .hidden { display:none !important; }
 .label { font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+.footer { display:flex; justify-content:space-between; padding:18px 24px; color:var(--muted); font-size:13px; }
