@@ -75,7 +75,7 @@ input[type="number"]{width:80px}
   border-top:1px solid var(--line); color:var(--muted); font-size:13px;
 }
 
-/* ===== Значки ===== */
+/* Значки */
 .hint { color: var(--muted); font-size: 13px; margin: -6px 0 14px; }
 .badges-picker { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 16px; }
 .badges-picker label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); }
@@ -99,16 +99,15 @@ input[type="number"]{width:80px}
 .badge-chip:hover { background: #dcebe2; }
 .muted { color: var(--muted); }
 
-/* ===== Вход ===== */
-.hidden { display: none !important; }
-
+/* Экран входа */
 .login-screen {
   min-height: 100vh;
-  display: flex;
+  display: flex; /* JS будет менять на none */
   align-items: center;
   justify-content: center;
   padding: 24px;
   background: var(--bg);
+  position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
 }
 .login-card {
   width: 100%;
