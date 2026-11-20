@@ -3,55 +3,231 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Кворум</title>
+  <title>Кворум — помощник учителя</title>
+  <!-- Подключаем красивые шрифты с засечками для заголовков и чистые для текста -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,700&display=swap" rel="stylesheet">
+  
   <style>
-    :root { --bg:#f4f0e8; --paper:#fbf9f4; --ink:#1c1a17; --muted:#79736a; --line:#e1dacd; --accent:#2f5d50; }
+    :root { 
+      --bg: #f6f4ee;       /* Теплый бумажный фон */
+      --paper: #ffffff;    /* Чистый белый для карточек */
+      --ink: #1c1a17;      /* Глубокий черный текст */
+      --muted: #7a756b;    /* Серый для второстепенного */
+      --line: #e6e1d5;     /* Цвет рамок */
+      --accent: #2f5d50;   /* Глубокий зеленый */
+      --accent-hover: #244a40;
+      --danger: #a4453b;
+    }
+    
     * { box-sizing: border-box; }
-    body { margin:0; background:var(--bg); color:var(--ink); font-family:system-ui, sans-serif; line-height:1.5; display: none; }
-    .topbar { display:flex; align-items:center; padding:18px 24px; border-bottom:1px solid var(--line); background:var(--paper); }
-    .brand { font-weight:700; font-size:18px; }
-    .container { max-width:860px; margin:0 auto; padding:24px; }
-    .card { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:18px; }
-    .card h2 { margin:0 0 14px; font-size:20px; }
-    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    textarea, input, select { padding:10px; border:1px solid var(--line); border-radius:10px; background:#fff; font:inherit; width:100%; margin-bottom:8px; outline:none; }
-    textarea:focus, input:focus, select:focus { border-color:var(--accent); }
-    .btn { padding:10px 18px; border-radius:10px; border:1px solid var(--line); background:transparent; cursor:pointer; font:inherit; white-space:nowrap; }
-    .btn-primary { background:var(--accent); color:#fff; border:none; }
-    .btn-outline { background:#fff; }
-    .btn-ghost { color:#a4453b; border:none; }
-    .check-list { list-style:none; padding:0; margin:0; }
-    .check-list li { padding:8px 0; border-bottom:1px solid var(--line); }
-    .teams { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; }
-    .team { background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; }
-    .team h3 { margin:0 0 8px; font-size:16px; }
-    .team ul { margin:0; padding-left:18px; color:var(--muted); font-size:14px; }
-    .badges-picker { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
-    .badge-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line); align-items:center; }
-    .badge-row:last-child { border-bottom:none; }
-    .badge-chip { background:#eaf1ec; color:var(--accent); padding:4px 10px; border-radius:12px; font-size:13px; display:inline-block; margin-right:4px; margin-bottom:4px; font-weight:500; }
-    .lesson { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-    .picked { font-size:32px; font-weight:700; margin:10px 0; color:var(--accent); }
-    .scores div { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--line); }
-    .scores div:last-child { border-bottom:none; }
-    .scores .ctl { display:flex; gap:4px; }
-    .scores button { width:30px; height:30px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer; font-weight:bold; }
-    .scores button.plus { color:var(--accent); }
-    .scores button.minus { color:#a4453b; }
-    .login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--bg); position:fixed; top:0; left:0; width:100%; z-index:100; padding:20px; }
-    .login-card { width:100%; max-width:360px; background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:28px; display:flex; flex-direction:column; gap:14px; box-shadow:0 20px 40px -20px rgba(0,0,0,0.1); }
-    .login-brand { font-size:24px; font-weight:700; text-align:center; }
-    .login-sub { text-align:center; color:var(--muted); font-size:13px; margin-top:-8px; margin-bottom:8px; }
-    .login-card input { padding:12px; border:1px solid var(--line); border-radius:10px; margin-bottom:0; }
-    .login-error { color:#a4453b; font-size:13px; text-align:center; min-height:18px; }
-    .hidden { display:none !important; }
-    .label { font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; font-weight:500; letter-spacing:0.05em;}
-    .footer { display:flex; justify-content:space-between; padding:18px 24px; color:var(--muted); font-size:13px; border-top:1px solid var(--line); }
-    @media(max-width:680px){ .lesson { grid-template-columns:1fr; } }
+    
+    body { 
+      margin: 0; 
+      background: var(--bg); 
+      color: var(--ink); 
+      font-family: "Inter", system-ui, sans-serif; 
+      line-height: 1.5; 
+      display: none; 
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, .brand, .login-brand { 
+      font-family: "Literata", Georgia, serif; 
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
+    /* Шапка */
+    .topbar { 
+      display: flex; 
+      align-items: center; 
+      padding: 16px 24px; 
+      border-bottom: 1px solid var(--line); 
+      background: rgba(246, 244, 238, 0.85); 
+      backdrop-filter: blur(8px);
+      position: sticky; 
+      top: 0; 
+      z-index: 10; 
+    }
+    .brand { font-size: 20px; font-weight: 700; color: var(--ink); }
+    .sub { color: var(--muted); font-size: 14px; margin-left: 12px; }
+
+    /* Сетка контента */
+    .container { max-width: 860px; margin: 0 auto; padding: 32px 24px; }
+    
+    /* Карточки */
+    .card { 
+      background: var(--paper); 
+      border: 1px solid var(--line); 
+      border-radius: 16px; 
+      padding: 24px; 
+      margin-bottom: 24px; 
+      box-shadow: 0 4px 20px -10px rgba(0,0,0,0.05);
+    }
+    .card h2 { margin: 0 0 16px; font-size: 22px; }
+    .hint { font-size: 14px; color: var(--muted); margin: -8px 0 16px; }
+
+    /* Формы и кнопки */
+    .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    
+    textarea, input[type="text"], input[type="password"], input[type="number"], select { 
+      padding: 12px 14px; 
+      border: 1px solid var(--line); 
+      border-radius: 10px; 
+      background: var(--bg); 
+      font-family: "Inter", sans-serif;
+      font-size: 15px; 
+      color: var(--ink); 
+      width: 100%; 
+      margin-bottom: 12px; 
+      outline: none; 
+      transition: all 0.2s;
+    }
+    textarea { resize: vertical; min-height: 80px; }
+    textarea:focus, input:focus, select:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(47,93,80,0.1); }
+    
+    .btn { 
+      padding: 10px 20px; 
+      border-radius: 10px; 
+      border: 1px solid var(--line); 
+      background: transparent; 
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      cursor: pointer; 
+      font-size: 15px;
+      white-space: nowrap; 
+      transition: all 0.15s;
+    }
+    .btn:hover { background: #f0ece1; }
+    
+    .btn-primary { 
+      background: var(--accent); 
+      color: #fff; 
+      border: none; 
+      box-shadow: 0 2px 4px rgba(47,93,80,0.2);
+    }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    
+    .btn-outline { background: #fff; border-color: var(--line); }
+    .btn-ghost { color: var(--danger); border: none; }
+    .btn-ghost:hover { background: #f7ecea; }
+
+    /* Список присутствия */
+    .check-list { list-style: none; padding: 0; margin: 0; }
+    .check-list li { 
+      padding: 12px 0; 
+      border-bottom: 1px solid var(--line); 
+      display: flex;
+      align-items: center;
+    }
+    .check-list li:last-child { border-bottom: none; }
+    .check-list input[type="checkbox"] { 
+      width: 20px; 
+      height: 20px; 
+      accent-color: var(--accent); 
+      margin-right: 12px; 
+      cursor: pointer;
+    }
+    .check-list label { display: flex; align-items: center; cursor: pointer; width: 100%; font-size: 16px; }
+    .check-list span { color: var(--muted); font-size: 13px; margin-left: 8px; }
+
+    /* Команды */
+    .teams { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px; }
+    .team { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+    .team h3 { margin: 0 0 12px; font-size: 16px; color: var(--accent); }
+    .team ul { margin: 0; padding-left: 20px; color: var(--ink); font-size: 15px; }
+    .team li { margin-bottom: 4px; }
+
+    /* Значки */
+    .badges-picker { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .badges-picker select { margin-bottom: 0; flex: 1; min-width: 200px; }
+    .badges-picker .btn { margin-bottom: 0; }
+    
+    .badge-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: center; }
+    .badge-row:last-child { border-bottom: none; }
+    .badge-row > span:first-child { font-weight: 500; font-size: 16px; }
+    .badge-chip { 
+      background: #eaf1ec; 
+      color: var(--accent); 
+      padding: 4px 12px; 
+      border-radius: 20px; 
+      font-size: 14px; 
+      display: inline-flex; 
+      align-items: center;
+      gap: 4px;
+      margin-left: 6px; 
+      font-weight: 500; 
+    }
+
+    /* Урок (Кто отвечает / Счёт) */
+    .lesson { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .label { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+    
+    .picked { 
+      font-size: 36px; 
+      font-family: "Literata", serif;
+      font-weight: 700; 
+      margin: 10px 0 20px; 
+      color: var(--accent); 
+      min-height: 54px;
+    }
+    
+    .scores div { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .scores div:last-child { border-bottom: none; }
+    .scores span:nth-child(2) { font-size: 20px; font-weight: 700; font-family: "Literata", serif; }
+    .scores .ctl { display: flex; gap: 6px; }
+    
+    .scores button { 
+      width: 36px; 
+      height: 36px; 
+      border-radius: 8px; 
+      border: 1px solid var(--line); 
+      background: #fff; 
+      cursor: pointer; 
+      font-size: 18px;
+      font-weight: 600; 
+      transition: 0.1s;
+    }
+    .scores button:hover { background: var(--bg); }
+    .scores button.plus { color: var(--accent); }
+    .scores button.minus { color: var(--danger); }
+
+    /* Экран входа */
+    .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 24px; }
+    .login-card { 
+      width: 100%; 
+      max-width: 380px; 
+      background: var(--paper); 
+      border: 1px solid var(--line); 
+      border-radius: 20px; 
+      padding: 40px 32px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 16px; 
+      box-shadow: 0 20px 40px -20px rgba(0,0,0,0.1); 
+    }
+    .login-brand { font-size: 28px; font-weight: 700; text-align: center; color: var(--ink); }
+    .login-sub { text-align: center; color: var(--muted); font-size: 14px; margin-top: -12px; margin-bottom: 12px; font-weight: 500; }
+    .login-card input { padding: 14px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 0; background: var(--bg); }
+    .login-card .btn { width: 100%; padding: 14px; font-size: 16px; }
+    .login-error { color: var(--danger); font-size: 14px; text-align: center; min-height: 20px; font-weight: 500;}
+    .hidden { display: none !important; }
+
+    /* Подвал */
+    .footer { display: flex; justify-content: space-between; padding: 24px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); margin-top: 40px; }
+
+    /* Адаптив под телефоны */
+    @media(max-width: 680px) {
+      .lesson { grid-template-columns: 1fr; }
+      .badges-picker { flex-direction: column; align-items: stretch; }
+    }
   </style>
 </head>
 <body>
 
+  <!-- ЭКРАН ВХОДА -->
   <div id="login-screen" class="login-screen">
     <div id="teacher-login-card" class="login-card">
       <div class="login-brand">Кворум</div>
@@ -59,8 +235,8 @@
       <input id="login-password" type="password" placeholder="Пароль" autofocus>
       <button id="login-btn" class="btn btn-primary">Войти</button>
       <div id="login-error" class="login-error"></div>
-      <div style="text-align: center; margin-top: 8px;">
-        <a href="#" id="show-student-login" style="color: var(--muted); font-size: 13px; text-decoration: underline;">Вход в аккаунт ученика</a>
+      <div style="text-align: center; margin-top: 12px;">
+        <a href="#" id="show-student-login" style="color: var(--muted); font-size: 14px; text-decoration: none; border-bottom: 1px dashed var(--muted); padding-bottom: 2px;">Вход для ученика</a>
       </div>
     </div>
 
@@ -71,35 +247,39 @@
       <input id="student-password-input" type="password" placeholder="Пароль">
       <button id="student-login-btn" class="btn btn-primary">Войти</button>
       <div id="student-login-error" class="login-error"></div>
-      <div style="text-align: center; margin-top: 8px;">
-        <a href="#" id="back-to-teacher" style="color: var(--muted); font-size: 13px; text-decoration: underline;">Я учитель</a>
+      <div style="text-align: center; margin-top: 12px;">
+        <a href="#" id="back-to-teacher" style="color: var(--muted); font-size: 14px; text-decoration: none; border-bottom: 1px dashed var(--muted); padding-bottom: 2px;">Я учитель</a>
       </div>
     </div>
 
     <div id="student-profile-card" class="login-card hidden" style="max-width: 420px;">
-      <button id="student-logout" class="btn btn-outline" style="align-self: flex-start; margin-bottom: 10px; padding: 6px 12px; font-size: 13px;">← Выйти</button>
+      <button id="student-logout" class="btn btn-outline" style="align-self: flex-start; margin-bottom: 16px; padding: 8px 16px; font-size: 14px;">← Назад</button>
       <div class="login-brand" id="sp-name">Имя</div>
-      <div class="login-sub" style="margin-bottom: 20px;">Личный кабинет</div>
+      <div class="login-sub" style="margin-bottom: 24px;">Личный кабинет</div>
+      
       <div class="label">Мои значки</div>
-      <div id="sp-badges" class="badges-total" style="margin-bottom: 20px;"></div>
+      <div id="sp-badges" class="badges-total" style="margin-bottom: 24px;"></div>
+      
       <div class="label">Команда и баллы</div>
-      <div id="sp-team" style="font-size: 18px; font-weight: 600; margin-bottom: 6px;"></div>
-      <div id="sp-score" style="font-size: 32px; font-weight: 700; color: var(--accent);"></div>
+      <div id="sp-team" style="font-size: 18px; font-weight: 500; margin-bottom: 8px;"></div>
+      <div id="sp-score" style="font-size: 36px; font-family: 'Literata', serif; font-weight: 700; color: var(--accent);"></div>
     </div>
   </div>
 
+  <!-- ПРИЛОЖЕНИЕ УЧИТЕЛЯ -->
   <div id="app-screen" style="display:none;">
     <header class="topbar">
       <div class="brand">Кворум</div>
+      <div class="sub">помощник учителя</div>
       <button id="logout" class="btn btn-ghost" style="margin-left:auto">Выйти</button>
     </header>
 
     <main class="container">
       <section class="card">
         <h2>Ученики</h2>
-        <p style="font-size:13px; color:#79736a; margin-bottom:8px;">Формат: <b>Имя, логин, пароль</b></p>
-        <textarea id="names-input" rows="4" placeholder="Иванов Иван, ivan, 123"></textarea>
-        <div class="row" style="margin-top:10px">
+        <p class="hint">Формат добавления: <b>Имя, логин, пароль</b> (каждый с новой строки)</p>
+        <textarea id="names-input" rows="4" placeholder="Иванов Иван, ivan, 123&#10;Петрова Анна, anna, 456"></textarea>
+        <div class="row" style="margin-top:8px">
           <button id="add-names" class="btn btn-primary">Добавить</button>
           <button id="clear-all" class="btn btn-ghost">Очистить всё</button>
         </div>
@@ -108,20 +288,22 @@
       <section class="card">
         <h2>Присутствие</h2>
         <ul id="students-list" class="check-list"></ul>
-        <button id="save-presence" class="btn btn-primary" style="margin-top:10px">Сохранить присутствие</button>
+        <button id="save-presence" class="btn btn-outline" style="margin-top:16px">Сохранить присутствие</button>
       </section>
 
       <section class="card">
         <h2>Команды</h2>
         <div class="row">
-          <input id="n-groups" type="number" min="2" max="10" value="3" style="width:80px">
+          <label for="n-groups" style="font-size:15px; font-weight:500;">Сколько команд:</label>
+          <input id="n-groups" type="number" min="2" max="10" value="3" style="width:80px; margin-bottom:0;">
           <button id="split" class="btn btn-primary">Разделить</button>
         </div>
-        <div id="teams" class="teams" style="margin-top:16px;"></div>
+        <div id="teams" class="teams"></div>
       </section>
 
       <section class="card">
-        <h2>Значки</h2>
+        <h2>Значки за активность</h2>
+        <p class="hint">Не оценки — просто отметки внимания и участия.</p>
         <div class="badges-picker">
           <select id="badge-student"></select>
           <select id="badge-type">
@@ -140,10 +322,10 @@
           <div>
             <div class="label">Кто отвечает?</div>
             <div id="picked" class="picked">—</div>
-            <button id="pick" class="btn btn-primary">Выбрать</button>
+            <button id="pick" class="btn btn-primary" style="padding: 12px 24px; font-size: 16px;">Выбрать ученика</button>
           </div>
           <div>
-            <div class="label">Счёт</div>
+            <div class="label">Счёт команд</div>
             <div id="scores" class="scores"></div>
           </div>
         </div>
@@ -158,11 +340,15 @@
 
   <script>
     document.body.style.display = "block";
-    const KEY = "quorum_v3"; // Новый ключ для чистого старта
+    const KEY = "quorum_v3"; 
     let S = { students: [], teams: [], scores: {}, picked: null, badges: {} };
+    
     try {
       const saved = localStorage.getItem(KEY);
-      if (saved) { const parsed = JSON.parse(saved); if (parsed && Array.isArray(parsed.students)) S = parsed; }
+      if (saved) { 
+        const parsed = JSON.parse(saved); 
+        if (parsed && Array.isArray(parsed.students)) S = parsed; 
+      }
     } catch(e) {}
 
     function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
@@ -215,10 +401,10 @@
       let teamName = "Без команды", score = 0;
       S.teams.forEach((t, i) => { if (t.members.includes(name)) { teamName = t.name; score = S.scores[i] || 0; } });
       $("sp-team").textContent = teamName;
-      $("sp-score").textContent = score + " б.";
+      $("sp-score").textContent = score + " баллов";
       const counts = S.badges[name] || {};
       const icons = { active: "★", exact: "✓", team: "♡" };
-      $("sp-badges").innerHTML = Object.keys(counts).map(k => `<span class="badge-chip">${icons[k] || k} ${counts[k]}</span>`).join("") || "Пока нет значков";
+      $("sp-badges").innerHTML = Object.keys(counts).map(k => `<span class="badge-chip">${icons[k] || k} ${counts[k]}</span>`).join("") || "<span style='color:var(--muted)'>Пока нет значков</span>";
     }
 
     $("add-names").onclick = function() {
@@ -244,9 +430,9 @@
 
     function renderStudents() {
       $("students-list").innerHTML = S.students.map((s, i) => `
-        <li><label style="cursor:pointer; display:flex; align-items:center;">
-          <input type="checkbox" ${s.present ? "checked" : ""} onchange="toggle(${i})" style="width:18px;height:18px;margin-right:10px;"> 
-          ${s.name} <span style="color:#79736a;font-size:12px;margin-left:6px;">(${s.login})</span>
+        <li><label>
+          <input type="checkbox" ${s.present ? "checked" : ""} onchange="toggle(${i})"> 
+          ${s.name} <span>(${s.login})</span>
         </label></li>
       `).join("");
     }
@@ -292,7 +478,7 @@
 
     function renderScores() {
       $("scores").innerHTML = S.teams.map((t, i) => `
-        <div><span>${t.name}</span><span style="font-weight:700">${S.scores[i] || 0}</span><span><button onclick="addScore(${i}, 1)" class="plus">+</button> <button onclick="addScore(${i}, -1)" class="minus">−</button></span></div>
+        <div><span>${t.name}</span><span>${S.scores[i] || 0}</span><span class="ctl"><button onclick="addScore(${i}, 1)" class="plus">+</button> <button onclick="addScore(${i}, -1)" class="minus">−</button></span></div>
       `).join("");
     }
     window.addScore = function(i, d) { S.scores[i] = (S.scores[i] || 0) + d; save(); renderScores(); };
