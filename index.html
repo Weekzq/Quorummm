@@ -5,20 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Кворум — помощник учителя</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Жесткое скрытие до загрузки JS, чтобы не было мигания */
+    #app-screen { display: none; }
+    #login-screen { display: flex; }
+  </style>
 </head>
 <body>
 
+  <!-- ЭКРАН ВХОДА -->
   <div id="login-screen" class="login-screen">
-    <form id="login-form" class="login-card" autocomplete="off">
+    <div class="login-card">
       <div class="login-brand">Кворум</div>
       <div class="login-sub">Вход для учителя</div>
       <input id="login-password" type="password" placeholder="Пароль" autofocus>
-      <button type="submit" class="btn btn-primary">Войти</button>
+      <button id="login-btn" class="btn btn-primary">Войти</button>
       <div id="login-error" class="login-error"></div>
-    </form>
+    </div>
   </div>
 
-  <div id="app" class="app hidden">
+  <!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
+  <div id="app-screen" class="app">
     <header class="topbar">
       <div class="brand">Кворум</div>
       <div class="sub">помощник учителя</div>
@@ -29,8 +36,7 @@
       <section class="card">
         <h2>Ученики</h2>
         <div class="row">
-          <textarea id="names-input" rows="3"
-            placeholder="Вставь список, по одному в строке"></textarea>
+          <textarea id="names-input" rows="3" placeholder="Вставь список, по одному в строке"></textarea>
         </div>
         <div class="row">
           <button id="add-names" class="btn">Добавить</button>
@@ -57,11 +63,8 @@
       <section class="card">
         <h2>Значки за активность</h2>
         <p class="hint">Не оценки — просто отметки внимания и участия.</p>
-
         <div class="badges-picker">
-          <label>Ученик
-            <select id="badge-student"></select>
-          </label>
+          <label>Ученик <select id="badge-student"></select></label>
           <label>Значок
             <select id="badge-type">
               <option value="active">Активный ответ</option>
@@ -73,7 +76,6 @@
           </label>
           <button id="give-badge" class="btn btn-primary">Дать значок</button>
         </div>
-
         <div id="badges-total" class="badges-total"></div>
       </section>
 
