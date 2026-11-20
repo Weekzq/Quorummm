@@ -4,10 +4,12 @@ const KEY = "quorum_v1";
 function load() {
   try {
     const raw = localStorage.getItem(KEY);
-    if (!raw) return { students: [], teams: [], scores: {}, note: "", picked: null };
-    return JSON.parse(raw);
+    if (!raw) return { students: [], teams: [], scores: {}, note: "", picked: null, badges: {} };
+    const data = JSON.parse(raw);
+    if (!data.badges) data.badges = {};
+    return data;
   } catch {
-    return { students: [], teams: [], scores: {}, note: "", picked: null };
+    return { students: [], teams: [], scores: {}, note: "", picked: null, badges: {} };
   }
 }
 
@@ -39,6 +41,7 @@ function renderStudents() {
       const i = Number(e.target.dataset.id);
       S.students[i].present = e.target.checked;
       save(S);
+      renderBadgeSelect();
     });
   });
 }
@@ -51,11 +54,12 @@ $("add-names").addEventListener("click", () => {
   $("names-input").value = "";
   save(S);
   renderStudents();
+  renderBadgeSelect();
 });
 
 $("clear-all").addEventListener("click", () => {
   if (!confirm("Удалить всех учеников и команды?")) return;
-  S = { students: [], teams: [], scores: {}, note: "", picked: null };
+  S = { students: [], teams: [], scores: {}, note: "", picked: null, badges: {} };
   save(S);
   renderAll();
 });
@@ -127,6 +131,47 @@ function renderScores() {
   });
 }
 
+// ===== Значки =====
+const BADGE_ICONS = { active: "★", exact: "✓", team: "♡", attention: "◉", idea: "✦" };
+const BADGE_NAMES = {
+  active: "Активный ответ",
+  exact: "Точный ответ",
+  team: "Помог команде",
+  attention: "Внимание",
+  idea: "Смелая гипотеза",
+};
+
+function renderBadgeSelect() {
+  const sel = $("badge-student");
+  const present = S.students.filter(s => s.present).map(s => s.name);
+  sel.innerHTML = present.length
+    ? present.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join("")
+    : `<option value="">— нет отмеченных —</option>`;
+}
+
+function renderBadgesTotal() {
+  const box = $("badges-total");
+  const entries = Object.entries(S.badges || {});
+  if (!entries.length) { box.innerHTML = ""; return; }
+  box.innerHTML = entries.map(([name, counts]) => {
+    const chips = Object.entries(counts)
+      .filter(([, c]) => c > 0)
+      .map(([type, c]) => `<span class="badge-chip" title="${BADGE_NAMES[type] || type}">${BADGE_ICONS[type] || "•"} ${c}</span>`)
+      .join("");
+    return `<div class="badge-row"><span>${escapeHtml(name)}</span><span class="chips">${chips || "<span class='muted'>—</span>"}</span></div>`;
+  }).join("");
+}
+
+$("give-badge").addEventListener("click", () => {
+  const name = $("badge-student").value;
+  const type = $("badge-type").value;
+  if (!name) return alert("Сначала отметь присутствующих");
+  if (!S.badges[name]) S.badges[name] = {};
+  S.badges[name][type] = (S.badges[name][type] || 0) + 1;
+  save(S);
+  renderBadgesTotal();
+});
+
 // ===== Выбор ученика =====
 $("pick").addEventListener("click", () => {
   const present = S.students.filter(s => s.present).map(s => s.name);
@@ -149,6 +194,8 @@ function renderAll() {
   renderStudents();
   renderTeams();
   renderScores();
+  renderBadgeSelect();
+  renderBadgesTotal();
   $("picked").textContent = S.picked || "—";
   $("note").value = S.note || "";
 }
