@@ -1,11 +1,17 @@
 const KEY = "quorum_v1";
 let S = { students: [], teams: [], scores: {}, picked: null, badges: {} };
 
+// Загрузка с проверкой на старый формат
 try {
   const saved = localStorage.getItem(KEY);
   if (saved) {
     const parsed = JSON.parse(saved);
-    if (parsed && parsed.students) S = parsed;
+    if (parsed && parsed.students) {
+      S = parsed;
+      S.students = S.students.map(s => typeof s === 'string' 
+        ? { name: s, login: s.toLowerCase().replace(/\s+/g,''), pass: "123", present: true } 
+        : s);
+    }
   }
 } catch(e) {}
 
@@ -83,7 +89,7 @@ function showProfile(name) {
     .join("") || "Пока нет значков";
 }
 
-// УЧИТЕЛЬ: ДОБАВЛЕНИЕ УЧЕНИКОВ
+// УЧИТЕЛЬ: УЧЕНИКИ
 $("add-names").onclick = function() {
   const lines = $("names-input").value.split("\n");
   lines.forEach(line => {
@@ -110,7 +116,10 @@ $("clear-all").onclick = function() {
 
 function renderStudents() {
   $("students-list").innerHTML = S.students.map((s, i) => `
-    <li><label style="cursor:pointer"><input type="checkbox" ${s.present ? "checked" : ""} onchange="toggle(${i})" style="width:18px;height:18px;margin-right:10px;"> ${s.name} <span style="color:#79736a;font-size:12px">(${s.login})</span></label></li>
+    <li><label style="display:flex; align-items:center; cursor:pointer; width:100%;">
+      <input type="checkbox" ${s.present ? "checked" : ""} onchange="toggle(${i})" style="width:18px;height:18px;margin-right:10px;"> 
+      ${s.name} <span style="color:#79736a;font-size:12px; margin-left:6px;">(${s.login})</span>
+    </label></li>
   `).join("");
 }
 
@@ -160,14 +169,21 @@ function renderBadges() {
   
   const icons = { active: "★", exact: "✓", team: "♡" };
   $("badges-total").innerHTML = Object.keys(S.badges).map(name => `
-    <div class="badge-row"><span>${name}</span><span>${Object.keys(S.badges[name]).map(t => `<span class="badge-chip">${icons[t]} ${S.badges[name][t]}</span>`).join(" ")}</span></div>
+    <div class="badge-row"><span>${name}</span><span class="chips">${Object.keys(S.badges[name]).map(t => `<span class="badge-chip">${icons[t]} ${S.badges[name][t]}</span>`).join(" ")}</span></div>
   `).join("");
 }
 
 // СЧЁТ
 function renderScores() {
   $("scores").innerHTML = S.teams.map((t, i) => `
-    <div><span>${t.name}</span><span style="font-weight:700">${S.scores[i] || 0}</span><span><button onclick="addScore(${i}, 1)" class="plus">+</button> <button onclick="addScore(${i}, -1)" class="minus">−</button></span></div>
+    <div>
+      <span>${t.name}</span>
+      <span class="pts">${S.scores[i] || 0}</span>
+      <span class="ctl">
+        <button onclick="addScore(${i}, 1)" class="plus">+</button> 
+        <button onclick="addScore(${i}, -1)" class="minus">−</button>
+      </span>
+    </div>
   `).join("");
 }
 
