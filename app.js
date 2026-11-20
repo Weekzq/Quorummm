@@ -1,17 +1,13 @@
-const KEY = "quorum_v1";
+document.body.style.display = "block"; // Показываем страницу, если скрипт загрузился
+
+const KEY = "quorum_v2"; // НОВЫЙ КЛЮЧ (игнорирует старые данные)
 let S = { students: [], teams: [], scores: {}, picked: null, badges: {} };
 
-// Загрузка с проверкой на старый формат
 try {
   const saved = localStorage.getItem(KEY);
   if (saved) {
     const parsed = JSON.parse(saved);
-    if (parsed && parsed.students) {
-      S = parsed;
-      S.students = S.students.map(s => typeof s === 'string' 
-        ? { name: s, login: s.toLowerCase().replace(/\s+/g,''), pass: "123", present: true } 
-        : s);
-    }
+    if (parsed && Array.isArray(parsed.students)) S = parsed;
   }
 } catch(e) {}
 
@@ -52,7 +48,7 @@ $("student-login-btn").onclick = function() {
   const login = $("student-login-input").value.trim().toLowerCase();
   const pass = $("student-password-input").value.trim();
   
-  const student = S.students.find(s => s.login.toLowerCase() === login && s.pass === pass);
+  const student = S.students.find(s => s.login && s.login.toLowerCase() === login && s.pass === pass);
   
   if (student) {
     $("student-login-error").textContent = "";
@@ -89,7 +85,7 @@ function showProfile(name) {
     .join("") || "Пока нет значков";
 }
 
-// УЧИТЕЛЬ: УЧЕНИКИ
+// УЧИТЕЛЬ: ДОБАВЛЕНИЕ
 $("add-names").onclick = function() {
   const lines = $("names-input").value.split("\n");
   lines.forEach(line => {
