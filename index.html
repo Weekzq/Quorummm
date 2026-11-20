@@ -4,19 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Кворум — помощник учителя</title>
-  <!-- Подключаем красивые шрифты с засечками для заголовков и чистые для текста -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,700&display=swap" rel="stylesheet">
   
   <style>
     :root { 
-      --bg: #f6f4ee;       /* Теплый бумажный фон */
-      --paper: #ffffff;    /* Чистый белый для карточек */
-      --ink: #1c1a17;      /* Глубокий черный текст */
-      --muted: #7a756b;    /* Серый для второстепенного */
-      --line: #e6e1d5;     /* Цвет рамок */
-      --accent: #2f5d50;   /* Глубокий зеленый */
+      --bg: #f6f4ee;       
+      --paper: #ffffff;    
+      --ink: #1c1a17;      
+      --muted: #7a756b;    
+      --line: #e6e1d5;     
+      --accent: #2f5d50;   
       --accent-hover: #244a40;
       --danger: #a4453b;
     }
@@ -194,8 +193,8 @@
     .scores button.plus { color: var(--accent); }
     .scores button.minus { color: var(--danger); }
 
-    /* Экран входа */
-    .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 24px; }
+    /* ===== ЭКРАНЫ ВХОДА И ПРОФИЛЯ ===== */
+    .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 24px; overflow-y: auto;}
     .login-card { 
       width: 100%; 
       max-width: 380px; 
@@ -207,6 +206,7 @@
       flex-direction: column; 
       gap: 16px; 
       box-shadow: 0 20px 40px -20px rgba(0,0,0,0.1); 
+      margin: auto;
     }
     .login-brand { font-size: 28px; font-weight: 700; text-align: center; color: var(--ink); }
     .login-sub { text-align: center; color: var(--muted); font-size: 14px; margin-top: -12px; margin-bottom: 12px; font-weight: 500; }
@@ -215,6 +215,80 @@
     .login-error { color: var(--danger); font-size: 14px; text-align: center; min-height: 20px; font-weight: 500;}
     .hidden { display: none !important; }
 
+    /* ===== УЛУЧШЕННЫЙ ПРОФИЛЬ УЧЕНИКА ===== */
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px dashed var(--line);
+    }
+    .profile-avatar {
+      width: 64px;
+      height: 64px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-family: "Literata", serif;
+      font-weight: 700;
+      box-shadow: 0 8px 16px -8px rgba(47,93,80,0.5);
+    }
+    .profile-info h2 { margin: 0; font-size: 24px; line-height: 1.2; }
+    .profile-info p { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+    
+    .profile-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .stat-box {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-box .label { margin-bottom: 8px; font-size: 12px; }
+    .stat-box .value { font-size: 20px; font-weight: 600; font-family: "Literata", serif; color: var(--ink); }
+    .stat-box .value.score { color: var(--accent); font-size: 28px; }
+
+    .profile-badges-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      box-shadow: 0 2px 8px -4px rgba(0,0,0,0.05);
+    }
+    .profile-badge .icon {
+      font-size: 20px;
+      color: var(--accent);
+    }
+    .profile-badge .count {
+      background: var(--bg);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 14px;
+      color: var(--muted);
+      margin-left: 4px;
+    }
+
     /* Подвал */
     .footer { display: flex; justify-content: space-between; padding: 24px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); margin-top: 40px; }
 
@@ -222,6 +296,7 @@
     @media(max-width: 680px) {
       .lesson { grid-template-columns: 1fr; }
       .badges-picker { flex-direction: column; align-items: stretch; }
+      .profile-stats { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -252,21 +327,35 @@
       </div>
     </div>
 
-    <div id="student-profile-card" class="login-card hidden" style="max-width: 420px;">
-      <button id="student-logout" class="btn btn-outline" style="align-self: flex-start; margin-bottom: 16px; padding: 8px 16px; font-size: 14px;">← Назад</button>
-      <div class="login-brand" id="sp-name">Имя</div>
-      <div class="login-sub" style="margin-bottom: 24px;">Личный кабинет</div>
+    <!-- ОБНОВЛЕННЫЙ ПРОФИЛЬ -->
+    <div id="student-profile-card" class="login-card hidden" style="max-width: 480px; padding: 32px;">
+      <button id="student-logout" class="btn btn-outline" style="align-self: flex-start; padding: 8px 16px; font-size: 14px; margin-bottom: 8px;">← Назад</button>
       
-      <div class="label">Мои значки</div>
-      <div id="sp-badges" class="badges-total" style="margin-bottom: 24px;"></div>
+      <div class="profile-header">
+        <div class="profile-avatar" id="sp-avatar">И</div>
+        <div class="profile-info">
+          <h2 id="sp-name">Имя</h2>
+          <p>Личный кабинет</p>
+        </div>
+      </div>
       
-      <div class="label">Команда и баллы</div>
-      <div id="sp-team" style="font-size: 18px; font-weight: 500; margin-bottom: 8px;"></div>
-      <div id="sp-score" style="font-size: 36px; font-family: 'Literata', serif; font-weight: 700; color: var(--accent);"></div>
+      <div class="profile-stats">
+        <div class="stat-box">
+          <div class="label">Моя команда</div>
+          <div class="value" id="sp-team">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">Баллы команды</div>
+          <div class="value score" id="sp-score">0</div>
+        </div>
+      </div>
+      
+      <div class="label" style="margin-bottom: 16px;">Мои значки за урок</div>
+      <div id="sp-badges" class="profile-badges-grid"></div>
     </div>
   </div>
 
-  <!-- ПРИЛОЖЕНИЕ УЧИТЕЛЯ -->
+  <!-- ПРИЛОЖЕНИЕ УЧИТЕЛЯ (осталось без изменений) -->
   <div id="app-screen" style="display:none;">
     <header class="topbar">
       <div class="brand">Кворум</div>
@@ -382,29 +471,57 @@
       const login = $("student-login-input").value.trim().toLowerCase();
       const pass = $("student-password-input").value.trim();
       const student = S.students.find(s => s.login && s.login.toLowerCase() === login && s.pass === pass);
+      
       if (student) {
         $("student-login-error").textContent = "";
         $("student-login-input").value = "";
         $("student-password-input").value = "";
         showProfile(student.name);
-      } else { $("student-login-error").textContent = "Неверный логин или пароль"; }
+      } else { 
+        $("student-login-error").textContent = "Неверный логин или пароль"; 
+      }
     };
+    
     $("student-logout").onclick = function() {
       $("student-profile-card").classList.add("hidden");
       $("student-login-card").classList.remove("hidden");
     };
 
+    // Обновленная функция профиля
     function showProfile(name) {
       $("student-login-card").classList.add("hidden");
       $("student-profile-card").classList.remove("hidden");
+      
+      // Устанавливаем имя и аватарку (первую букву)
       $("sp-name").textContent = name;
+      $("sp-avatar").textContent = name.charAt(0).toUpperCase();
+
+      // Ищем команду и баллы
       let teamName = "Без команды", score = 0;
-      S.teams.forEach((t, i) => { if (t.members.includes(name)) { teamName = t.name; score = S.scores[i] || 0; } });
+      S.teams.forEach((t, i) => { 
+        if (t.members.includes(name)) { 
+          teamName = t.name; 
+          score = S.scores[i] || 0; 
+        } 
+      });
+      
       $("sp-team").textContent = teamName;
-      $("sp-score").textContent = score + " баллов";
+      $("sp-score").textContent = score;
+
+      // Отрисовываем значки в виде красивых карточек
       const counts = S.badges[name] || {};
       const icons = { active: "★", exact: "✓", team: "♡" };
-      $("sp-badges").innerHTML = Object.keys(counts).map(k => `<span class="badge-chip">${icons[k] || k} ${counts[k]}</span>`).join("") || "<span style='color:var(--muted)'>Пока нет значков</span>";
+      const titles = { active: "Активный ответ", exact: "Точный ответ", team: "Помог команде" };
+      
+      const badgesHtml = Object.keys(counts).map(k => `
+        <div class="profile-badge">
+          <span class="icon">${icons[k] || "•"}</span>
+          <span>${titles[k] || k}</span>
+          <span class="count">${counts[k]}</span>
+        </div>
+      `).join("");
+
+      $("sp-badges").innerHTML = badgesHtml || "<div style='color:var(--muted); font-size:15px;'>Пока нет значков. Отвечай на уроках, чтобы получить первый!</div>";
     }
 
     $("add-names").onclick = function() {
@@ -471,8 +588,13 @@
       const present = S.students.filter(s => s.present).map(s => s.name);
       $("badge-student").innerHTML = present.map(n => `<option value="${n}">${n}</option>`).join("");
       const icons = { active: "★", exact: "✓", team: "♡" };
+      const titles = { active: "Активный ответ", exact: "Точный", team: "Помог команде" };
+      
       $("badges-total").innerHTML = Object.keys(S.badges).map(name => `
-        <div class="badge-row"><span>${name}</span><span>${Object.keys(S.badges[name]).map(t => `<span class="badge-chip">${icons[t]} ${S.badges[name][t]}</span>`).join(" ")}</span></div>
+        <div class="badge-row">
+          <span>${name}</span>
+          <span>${Object.keys(S.badges[name]).map(t => `<span class="badge-chip" title="${titles[t]}">${icons[t]} ${S.badges[name][t]}</span>`).join(" ")}</span>
+        </div>
       `).join("");
     }
 
