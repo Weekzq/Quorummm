@@ -1,1 +1,313 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Кворум</title>
+  <style>
+    :root { --bg:#f4f0e8; --paper:#fbf9f4; --ink:#1c1a17; --muted:#79736a; --line:#e1dacd; --accent:#2f5d50; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:system-ui, sans-serif; line-height:1.5; display: none; }
+    .topbar { display:flex; align-items:center; padding:18px 24px; border-bottom:1px solid var(--line); background:var(--paper); }
+    .brand { font-weight:700; font-size:18px; }
+    .container { max-width:860px; margin:0 auto; padding:24px; }
+    .card { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:18px; }
+    .card h2 { margin:0 0 14px; font-size:20px; }
+    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    textarea, input, select { padding:10px; border:1px solid var(--line); border-radius:10px; background:#fff; font:inherit; width:100%; margin-bottom:8px; outline:none; }
+    textarea:focus, input:focus, select:focus { border-color:var(--accent); }
+    .btn { padding:10px 18px; border-radius:10px; border:1px solid var(--line); background:transparent; cursor:pointer; font:inherit; white-space:nowrap; }
+    .btn-primary { background:var(--accent); color:#fff; border:none; }
+    .btn-outline { background:#fff; }
+    .btn-ghost { color:#a4453b; border:none; }
+    .check-list { list-style:none; padding:0; margin:0; }
+    .check-list li { padding:8px 0; border-bottom:1px solid var(--line); }
+    .teams { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; }
+    .team { background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; }
+    .team h3 { margin:0 0 8px; font-size:16px; }
+    .team ul { margin:0; padding-left:18px; color:var(--muted); font-size:14px; }
+    .badges-picker { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+    .badge-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line); align-items:center; }
+    .badge-row:last-child { border-bottom:none; }
+    .badge-chip { background:#eaf1ec; color:var(--accent); padding:4px 10px; border-radius:12px; font-size:13px; display:inline-block; margin-right:4px; margin-bottom:4px; font-weight:500; }
+    .lesson { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .picked { font-size:32px; font-weight:700; margin:10px 0; color:var(--accent); }
+    .scores div { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--line); }
+    .scores div:last-child { border-bottom:none; }
+    .scores .ctl { display:flex; gap:4px; }
+    .scores button { width:30px; height:30px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer; font-weight:bold; }
+    .scores button.plus { color:var(--accent); }
+    .scores button.minus { color:#a4453b; }
+    .login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--bg); position:fixed; top:0; left:0; width:100%; z-index:100; padding:20px; }
+    .login-card { width:100%; max-width:360px; background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:28px; display:flex; flex-direction:column; gap:14px; box-shadow:0 20px 40px -20px rgba(0,0,0,0.1); }
+    .login-brand { font-size:24px; font-weight:700; text-align:center; }
+    .login-sub { text-align:center; color:var(--muted); font-size:13px; margin-top:-8px; margin-bottom:8px; }
+    .login-card input { padding:12px; border:1px solid var(--line); border-radius:10px; margin-bottom:0; }
+    .login-error { color:#a4453b; font-size:13px; text-align:center; min-height:18px; }
+    .hidden { display:none !important; }
+    .label { font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; font-weight:500; letter-spacing:0.05em;}
+    .footer { display:flex; justify-content:space-between; padding:18px 24px; color:var(--muted); font-size:13px; border-top:1px solid var(--line); }
+    @media(max-width:680px){ .lesson { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
 
+  <div id="login-screen" class="login-screen">
+    <div id="teacher-login-card" class="login-card">
+      <div class="login-brand">Кворум</div>
+      <div class="login-sub">Вход для учителя</div>
+      <input id="login-password" type="password" placeholder="Пароль" autofocus>
+      <button id="login-btn" class="btn btn-primary">Войти</button>
+      <div id="login-error" class="login-error"></div>
+      <div style="text-align: center; margin-top: 8px;">
+        <a href="#" id="show-student-login" style="color: var(--muted); font-size: 13px; text-decoration: underline;">Вход в аккаунт ученика</a>
+      </div>
+    </div>
+
+    <div id="student-login-card" class="login-card hidden">
+      <div class="login-brand">Кворум</div>
+      <div class="login-sub">Вход для ученика</div>
+      <input id="student-login-input" type="text" placeholder="Логин" autocomplete="off">
+      <input id="student-password-input" type="password" placeholder="Пароль">
+      <button id="student-login-btn" class="btn btn-primary">Войти</button>
+      <div id="student-login-error" class="login-error"></div>
+      <div style="text-align: center; margin-top: 8px;">
+        <a href="#" id="back-to-teacher" style="color: var(--muted); font-size: 13px; text-decoration: underline;">Я учитель</a>
+      </div>
+    </div>
+
+    <div id="student-profile-card" class="login-card hidden" style="max-width: 420px;">
+      <button id="student-logout" class="btn btn-outline" style="align-self: flex-start; margin-bottom: 10px; padding: 6px 12px; font-size: 13px;">← Выйти</button>
+      <div class="login-brand" id="sp-name">Имя</div>
+      <div class="login-sub" style="margin-bottom: 20px;">Личный кабинет</div>
+      <div class="label">Мои значки</div>
+      <div id="sp-badges" class="badges-total" style="margin-bottom: 20px;"></div>
+      <div class="label">Команда и баллы</div>
+      <div id="sp-team" style="font-size: 18px; font-weight: 600; margin-bottom: 6px;"></div>
+      <div id="sp-score" style="font-size: 32px; font-weight: 700; color: var(--accent);"></div>
+    </div>
+  </div>
+
+  <div id="app-screen" style="display:none;">
+    <header class="topbar">
+      <div class="brand">Кворум</div>
+      <button id="logout" class="btn btn-ghost" style="margin-left:auto">Выйти</button>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h2>Ученики</h2>
+        <p style="font-size:13px; color:#79736a; margin-bottom:8px;">Формат: <b>Имя, логин, пароль</b></p>
+        <textarea id="names-input" rows="4" placeholder="Иванов Иван, ivan, 123"></textarea>
+        <div class="row" style="margin-top:10px">
+          <button id="add-names" class="btn btn-primary">Добавить</button>
+          <button id="clear-all" class="btn btn-ghost">Очистить всё</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Присутствие</h2>
+        <ul id="students-list" class="check-list"></ul>
+        <button id="save-presence" class="btn btn-primary" style="margin-top:10px">Сохранить присутствие</button>
+      </section>
+
+      <section class="card">
+        <h2>Команды</h2>
+        <div class="row">
+          <input id="n-groups" type="number" min="2" max="10" value="3" style="width:80px">
+          <button id="split" class="btn btn-primary">Разделить</button>
+        </div>
+        <div id="teams" class="teams" style="margin-top:16px;"></div>
+      </section>
+
+      <section class="card">
+        <h2>Значки</h2>
+        <div class="badges-picker">
+          <select id="badge-student"></select>
+          <select id="badge-type">
+            <option value="active">★ Активный ответ</option>
+            <option value="exact">✓ Точный ответ</option>
+            <option value="team">♡ Помог команде</option>
+          </select>
+          <button id="give-badge" class="btn btn-primary">Дать</button>
+        </div>
+        <div id="badges-total" class="badges-total"></div>
+      </section>
+
+      <section class="card">
+        <h2>Урок</h2>
+        <div class="lesson">
+          <div>
+            <div class="label">Кто отвечает?</div>
+            <div id="picked" class="picked">—</div>
+            <button id="pick" class="btn btn-primary">Выбрать</button>
+          </div>
+          <div>
+            <div class="label">Счёт</div>
+            <div id="scores" class="scores"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    
+    <footer class="footer">
+      <span>Quorum · сделал Никита</span>
+      <span>2026</span>
+    </footer>
+  </div>
+
+  <script>
+    document.body.style.display = "block";
+    const KEY = "quorum_v3"; // Новый ключ для чистого старта
+    let S = { students: [], teams: [], scores: {}, picked: null, badges: {} };
+    try {
+      const saved = localStorage.getItem(KEY);
+      if (saved) { const parsed = JSON.parse(saved); if (parsed && Array.isArray(parsed.students)) S = parsed; }
+    } catch(e) {}
+
+    function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
+    function $(id) { return document.getElementById(id); }
+
+    $("login-btn").onclick = function() {
+      if ($("login-password").value === "История") {
+        $("login-screen").style.display = "none";
+        $("app-screen").style.display = "block";
+        renderAll();
+      } else { $("login-error").textContent = "Неверный пароль"; }
+    };
+    $("logout").onclick = function() {
+      $("app-screen").style.display = "none";
+      $("login-screen").style.display = "flex";
+      $("login-password").value = "";
+    };
+
+    $("show-student-login").onclick = function(e) {
+      e.preventDefault();
+      $("teacher-login-card").classList.add("hidden");
+      $("student-login-card").classList.remove("hidden");
+    };
+    $("back-to-teacher").onclick = function(e) {
+      e.preventDefault();
+      $("student-login-card").classList.add("hidden");
+      $("teacher-login-card").classList.remove("hidden");
+    };
+
+    $("student-login-btn").onclick = function() {
+      const login = $("student-login-input").value.trim().toLowerCase();
+      const pass = $("student-password-input").value.trim();
+      const student = S.students.find(s => s.login && s.login.toLowerCase() === login && s.pass === pass);
+      if (student) {
+        $("student-login-error").textContent = "";
+        $("student-login-input").value = "";
+        $("student-password-input").value = "";
+        showProfile(student.name);
+      } else { $("student-login-error").textContent = "Неверный логин или пароль"; }
+    };
+    $("student-logout").onclick = function() {
+      $("student-profile-card").classList.add("hidden");
+      $("student-login-card").classList.remove("hidden");
+    };
+
+    function showProfile(name) {
+      $("student-login-card").classList.add("hidden");
+      $("student-profile-card").classList.remove("hidden");
+      $("sp-name").textContent = name;
+      let teamName = "Без команды", score = 0;
+      S.teams.forEach((t, i) => { if (t.members.includes(name)) { teamName = t.name; score = S.scores[i] || 0; } });
+      $("sp-team").textContent = teamName;
+      $("sp-score").textContent = score + " б.";
+      const counts = S.badges[name] || {};
+      const icons = { active: "★", exact: "✓", team: "♡" };
+      $("sp-badges").innerHTML = Object.keys(counts).map(k => `<span class="badge-chip">${icons[k] || k} ${counts[k]}</span>`).join("") || "Пока нет значков";
+    }
+
+    $("add-names").onclick = function() {
+      const lines = $("names-input").value.split("\n");
+      lines.forEach(line => {
+        const parts = line.split(",").map(x => x.trim());
+        if (parts[0]) {
+          S.students.push({ 
+            name: parts[0], 
+            login: parts[1] || parts[0].toLowerCase().replace(/\s+/g, ''), 
+            pass: parts[2] || "123", 
+            present: true 
+          });
+        }
+      });
+      $("names-input").value = "";
+      save(); renderAll();
+    };
+
+    $("clear-all").onclick = function() {
+      if (confirm("Удалить всё?")) { S = { students: [], teams: [], scores: {}, picked: null, badges: {} }; save(); renderAll(); }
+    };
+
+    function renderStudents() {
+      $("students-list").innerHTML = S.students.map((s, i) => `
+        <li><label style="cursor:pointer; display:flex; align-items:center;">
+          <input type="checkbox" ${s.present ? "checked" : ""} onchange="toggle(${i})" style="width:18px;height:18px;margin-right:10px;"> 
+          ${s.name} <span style="color:#79736a;font-size:12px;margin-left:6px;">(${s.login})</span>
+        </label></li>
+      `).join("");
+    }
+    window.toggle = function(i) { S.students[i].present = !S.students[i].present; save(); };
+
+    $("save-presence").onclick = function() { save(); alert("Присутствие сохранено!"); };
+
+    $("split").onclick = function() {
+      const present = S.students.filter(s => s.present).map(s => s.name);
+      if (!present.length) return alert("Нет учеников!");
+      const n = Number($("n-groups").value);
+      present.sort(() => Math.random() - 0.5);
+      const teams = Array.from({ length: n }, () => []);
+      present.forEach((name, i) => teams[i % n].push(name));
+      S.teams = teams.map((m, i) => ({ name: `Команда ${i + 1}`, members: m }));
+      S.scores = {}; teams.forEach((_, i) => S.scores[i] = 0);
+      save(); renderAll();
+    };
+
+    function renderTeams() {
+      $("teams").innerHTML = S.teams.map(t => `
+        <div class="team"><h3>${t.name}</h3><ul>${t.members.map(m => `<li>${m}</li>`).join("")}</ul></div>
+      `).join("");
+    }
+
+    $("give-badge").onclick = function() {
+      const name = $("badge-student").value;
+      const type = $("badge-type").value;
+      if (!name) return;
+      if (!S.badges[name]) S.badges[name] = {};
+      S.badges[name][type] = (S.badges[name][type] || 0) + 1;
+      save(); renderAll();
+    };
+
+    function renderBadges() {
+      const present = S.students.filter(s => s.present).map(s => s.name);
+      $("badge-student").innerHTML = present.map(n => `<option value="${n}">${n}</option>`).join("");
+      const icons = { active: "★", exact: "✓", team: "♡" };
+      $("badges-total").innerHTML = Object.keys(S.badges).map(name => `
+        <div class="badge-row"><span>${name}</span><span>${Object.keys(S.badges[name]).map(t => `<span class="badge-chip">${icons[t]} ${S.badges[name][t]}</span>`).join(" ")}</span></div>
+      `).join("");
+    }
+
+    function renderScores() {
+      $("scores").innerHTML = S.teams.map((t, i) => `
+        <div><span>${t.name}</span><span style="font-weight:700">${S.scores[i] || 0}</span><span><button onclick="addScore(${i}, 1)" class="plus">+</button> <button onclick="addScore(${i}, -1)" class="minus">−</button></span></div>
+      `).join("");
+    }
+    window.addScore = function(i, d) { S.scores[i] = (S.scores[i] || 0) + d; save(); renderScores(); };
+
+    $("pick").onclick = function() {
+      const present = S.students.filter(s => s.present).map(s => s.name);
+      if (!present.length) return alert("Нет учеников!");
+      S.picked = present[Math.floor(Math.random() * present.length)];
+      save(); $("picked").textContent = S.picked;
+    };
+
+    function renderAll() {
+      renderStudents(); renderTeams(); renderBadges(); renderScores();
+      $("picked").textContent = S.picked || "—";
+    }
+  </script>
+</body>
+</html>
