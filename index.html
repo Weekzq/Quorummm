@@ -69,7 +69,7 @@
     <main class="container">
       <section class="card">
         <h2>Ученики</h2>
-        <p class="hint">Формат добавления: <b>Имя Фамилия, логин, пароль</b> (каждый с новой строки)</p>
+        <p class="hint">Формат: <b>Имя Фамилия, логин, пароль</b> (каждый с новой строки)</p>
         <textarea id="names-input" rows="4" placeholder="Иванов Иван, ivan, 123&#10;Петрова Анна, anna, 456"></textarea>
         <div class="row" style="margin-top:10px">
           <button id="add-names" class="btn btn-primary">Добавить учеников</button>
@@ -80,20 +80,21 @@
       <section class="card">
         <h2>Присутствие</h2>
         <ul id="students-list" class="check-list"></ul>
+        <button id="save-presence" class="btn btn-primary" style="margin-top:10px">Сохранить присутствие</button>
       </section>
 
       <section class="card">
         <h2>Команды</h2>
         <div class="row">
           <label for="n-groups">Команд:</label>
-          <input id="n-groups" type="number" min="2" max="10" value="3">
-          <button id="split" class="btn btn-primary">Разделить</button>
+          <input id="n-groups" type="number" min="2" max="10" value="3" style="width:80px">
+          <button id="split" class="btn btn-primary">Разделить на команды</button>
         </div>
-        <div id="teams" class="teams"></div>
+        <div id="teams" class="teams" style="margin-top:16px;"></div>
       </section>
 
       <section class="card">
-        <h2>Значки</h2>
+        <h2>Значки за активность</h2>
         <div class="badges-picker">
           <select id="badge-student"></select>
           <select id="badge-type">
@@ -101,7 +102,7 @@
             <option value="exact">✓ Точный ответ</option>
             <option value="team">♡ Помог команде</option>
           </select>
-          <button id="give-badge" class="btn btn-primary">Дать</button>
+          <button id="give-badge" class="btn btn-primary">Дать значок</button>
         </div>
         <div id="badges-total" class="badges-total"></div>
       </section>
@@ -112,10 +113,10 @@
           <div>
             <div class="label">Кто отвечает?</div>
             <div id="picked" class="picked">—</div>
-            <button id="pick" class="btn btn-primary">Выбрать</button>
+            <button id="pick" class="btn btn-primary">Выбрать ученика</button>
           </div>
           <div>
-            <div class="label">Счёт</div>
+            <div class="label">Счёт команд</div>
             <div id="scores" class="scores"></div>
           </div>
         </div>
