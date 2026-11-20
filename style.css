@@ -1,36 +1,225 @@
-:root { --bg:#f4f0e8; --paper:#fbf9f4; --ink:#1c1a17; --muted:#79736a; --line:#e1dacd; --accent:#2f5d50; }
-* { box-sizing: border-box; }
-body { margin:0; background:var(--bg); color:var(--ink); font-family:system-ui, sans-serif; line-height:1.5; }
-.topbar { display:flex; align-items:center; padding:18px 24px; border-bottom:1px solid var(--line); background:var(--paper); }
-.brand { font-weight:700; font-size:18px; }
-.container { max-width:860px; margin:0 auto; padding:24px; }
-.card { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:18px; }
-.card h2 { margin:0 0 14px; font-size:20px; }
-.row { display:flex; gap:10px; align-items:center; }
-textarea, input[type="number"], input[type="text"], input[type="password"], select { padding:10px; border:1px solid var(--line); border-radius:10px; background:#fff; font:inherit; width:100%; margin-bottom:8px; }
-textarea:focus, input:focus, select:focus { outline:none; border-color:var(--accent); }
-.btn { padding:10px 18px; border-radius:10px; border:1px solid var(--line); background:transparent; cursor:pointer; font:inherit; white-space:nowrap; }
-.btn-primary { background:var(--accent); color:#fff; border:none; }
-.btn-outline { background:#fff; }
-.check-list { list-style:none; padding:0; margin:0; }
-.check-list li { padding:8px 0; border-bottom:1px solid var(--line); display:flex; align-items:center; }
-.check-list input { width:18px; height:18px; margin-right:10px; margin-bottom:0; }
-.teams { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; }
-.team { background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; }
-.badges-picker { display:flex; gap:10px; margin-bottom:16px; align-items:flex-start; }
-.badges-picker select { margin-bottom:0; }
-.badge-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--line); }
-.badge-chip { background:#eaf1ec; color:var(--accent); padding:4px 8px; border-radius:12px; font-size:13px; margin-right:4px; display:inline-block; margin-bottom:4px;}
-.lesson { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-.picked { font-size:32px; font-weight:700; margin:10px 0; }
+// ===== ХРАНИЛИЩЕ =====
+const KEY = "quorum_v1";
+function load() {
+  try { 
+    let data = JSON.parse(localStorage.getItem(KEY));
+    if (!data) data = { students: [], teams: [], scores: {}, picked: null, badges: {} };
+    if (!data.badges) data.badges = {};
+    // Поддержка старого формата
+    data.students = data.students.map(s => typeof s === 'string' ? { name: s, login: s.toLowerCase(), pass: "123", present: true } : s);
+    return data;
+  } catch { 
+    return { students: [], teams: [], scores: {}, picked: null, badges: {} }; 
+  }
+}
+function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
+let S = load();
 
-/* ВХОД */
-.login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--bg); position:fixed; top:0; left:0; width:100%; z-index:100; padding:20px; }
-.login-card { width:100%; max-width:360px; background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:28px; display:flex; flex-direction:column; gap:14px; }
-.login-brand { font-size:24px; font-weight:700; text-align:center; }
-.login-sub { text-align:center; color:var(--muted); font-size:13px; margin-top:-8px; }
-.login-card input { padding:12px; border:1px solid var(--line); border-radius:10px; margin-bottom:0; }
-.login-error { color:#a4453b; font-size:13px; text-align:center; min-height:18px; }
-.hidden { display:none !important; }
-.label { font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
-.footer { display:flex; justify-content:space-between; padding:18px 24px; color:var(--muted); font-size:13px; }
+const $ = (id) => document.getElementById(id);
+const BADGE_NAMES = { active: "★", exact: "✓", team: "♡" };
+
+// ===== ВХОД УЧИТЕЛЯ =====
+$("login-btn").addEventListener("click", () => {
+  if ($("login-password").value === "История") {
+    $("login-screen").style.display = "none";
+    $("app-screen").style.display = "block";
+    renderAll();
+  } else {
+    $("login-error").textContent = "Неверный пароль";
+  }
+});
+
+$("logout").addEventListener("click", () => {
+  $("app-screen").style.display = "none";
+  $("login-screen").style.display = "flex";
+  $("login-password").value = "";
+});
+
+// ===== ВХОД УЧЕНИКА =====
+$("show-student-login").addEventListener("click", (e) => {
+  e.preventDefault();
+  $("teacher-login-card").classList.add("hidden");
+  $("student-login-card").classList.remove("hidden");
+});
+
+$("back-to-teacher").addEventListener("click", (e) => {
+  e.preventDefault();
+  $("student-login-card").classList.add("hidden");
+  $("teacher-login-card").classList.remove("hidden");
+});
+
+$("student-login-btn").addEventListener("click", () => {
+  const login = $("student-login-input").value.trim();
+  const pass = $("student-password-input").value.trim();
+  
+  // Ищем ученика (без учета регистра логина)
+  const student = S.students.find(s => s.login.toLowerCase() === login.toLowerCase() && s.pass === pass);
+  
+  if (student) {
+    $("student-login-error").textContent = "";
+    $("student-login-input").value = "";
+    $("student-password-input").value = "";
+    showProfile(student.name);
+  } else {
+    $("student-login-error").textContent = "Неверный логин или пароль";
+  }
+});
+
+$("student-logout").addEventListener("click", () => {
+  $("student-profile-card").classList.add("hidden");
+  $("student-login-card").classList.remove("hidden");
+});
+
+// ===== ПРОФИЛЬ УЧЕНИКА =====
+window.showProfile = (name) => {
+  $("student-login-card").classList.add("hidden");
+  $("student-profile-card").classList.remove("hidden");
+  $("sp-name").textContent = name;
+
+  let teamName = "Без команды", score = 0;
+  S.teams.forEach((t, i) => { 
+    if (t.members.includes(name)) { 
+      teamName = t.name; 
+      score = S.scores[i] || 0; 
+    } 
+  });
+  $("sp-team").textContent = teamName;
+  $("sp-score").textContent = score + " б.";
+
+  const counts = S.badges[name] || {};
+  $("sp-badges").innerHTML = Object.entries(counts)
+    .map(([t, c]) => `<span class="badge-chip">${BADGE_NAMES[t]} ${c}</span>`)
+    .join("") || "Пока нет значков";
+};
+
+// ===== УЧЕНИКИ (УЧИТЕЛЬ) =====
+$("add-names").addEventListener("click", () => {
+  const lines = $("names-input").value.split("\n").map(x => x.trim()).filter(Boolean);
+  lines.forEach(line => {
+    const parts = line.split(",").map(x => x.trim());
+    if (parts.length >= 1 && parts[0]) {
+      const name = parts[0];
+      const login = parts[1] || name.toLowerCase().replace(/\s+/g, '');
+      const pass = parts[2] || "123";
+      S.students.push({ name, login, pass, present: true });
+    }
+  });
+  $("names-input").value = "";
+  save(); renderAll();
+});
+
+$("clear-all").addEventListener("click", () => {
+  if (confirm("Удалить всех учеников и команды?")) { 
+    S = { students: [], teams: [], scores: {}, picked: null, badges: {} }; 
+    save(); renderAll(); 
+  }
+});
+
+function renderStudents() {
+  $("students-list").innerHTML = S.students.map((s, i) => `
+    <li>
+      <label style="display:flex; align-items:center; cursor:pointer">
+        <input type="checkbox" ${s.present ? "checked" : ""} onchange="togglePresent(${i}, this.checked)" style="width:18px;height:18px;margin-right:10px;">
+        ${s.name} <span style="color:var(--muted);font-size:12px;margin-left:6px;">(логин: ${s.login})</span>
+      </label>
+    </li>
+  `).join("");
+}
+
+window.togglePresent = (i, val) => { 
+  S.students[i].present = val; 
+  save(); 
+  renderBadges(); // Обновляем список для выдачи значков
+};
+
+$("save-presence").addEventListener("click", () => {
+  save();
+  alert("Присутствие сохранено!");
+});
+
+// ===== КОМАНДЫ =====
+$("split").addEventListener("click", () => {
+  const present = S.students.filter(s => s.present).map(s => s.name);
+  if (!present.length) return alert("Нет отмеченных учеников!");
+  
+  const n = Number($("n-groups").value);
+  present.sort(() => Math.random() - 0.5);
+  const teams = Array.from({ length: n }, () => []);
+  present.forEach((name, i) => teams[i % n].push(name));
+  
+  S.teams = teams.map((m, i) => ({ name: `Команда ${i + 1}`, members: m }));
+  S.scores = {}; 
+  teams.forEach((_, i) => S.scores[i] = 0);
+  
+  save(); renderAll();
+});
+
+function renderTeams() {
+  $("teams").innerHTML = S.teams.map(t => `
+    <div class="team">
+      <h3>${t.name}</h3>
+      <ul>${t.members.map(m => `<li>${m}</li>`).join("")}</ul>
+    </div>
+  `).join("");
+}
+
+// ===== ЗНАЧКИ =====
+$("give-badge").addEventListener("click", () => {
+  const name = $("badge-student").value;
+  const type = $("badge-type").value;
+  if (!name) return;
+  if (!S.badges[name]) S.badges[name] = {};
+  S.badges[name][type] = (S.badges[name][type] || 0) + 1;
+  save(); renderAll();
+});
+
+function renderBadges() {
+  const present = S.students.filter(s => s.present).map(s => s.name);
+  $("badge-student").innerHTML = present.map(n => `<option value="${n}">${n}</option>`).join("");
+  
+  $("badges-total").innerHTML = Object.entries(S.badges).map(([name, counts]) => `
+    <div class="badge-row">
+      <span>${name}</span>
+      <span>${Object.entries(counts).map(([t, c]) => `<span class="badge-chip">${BADGE_NAMES[t]} ${c}</span>`).join(" ")}</span>
+    </div>
+  `).join("");
+}
+
+// ===== СЧЁТ =====
+function renderScores() {
+  $("scores").innerHTML = S.teams.map((t, i) => `
+    <div>
+      <span>${t.name}</span>
+      <span style="font-weight:700">${S.scores[i] || 0}</span>
+      <span class="ctl">
+        <button onclick="addScore(${i}, 1)" class="plus">+</button>
+        <button onclick="addScore(${i}, -1)" class="minus">−</button>
+      </span>
+    </div>
+  `).join("");
+}
+
+window.addScore = (i, delta) => {
+  S.scores[i] = (S.scores[i] || 0) + delta;
+  save(); renderScores();
+};
+
+// ===== ВЫБОР =====
+$("pick").addEventListener("click", () => {
+  const present = S.students.filter(s => s.present).map(s => s.name);
+  if (!present.length) return alert("Нет отмеченных учеников!");
+  S.picked = present[Math.floor(Math.random() * present.length)];
+  save(); $("picked").textContent = S.picked;
+});
+
+// ===== ОБЩИЙ РЕНДЕР =====
+function renderAll() {
+  renderStudents(); 
+  renderTeams(); 
+  renderBadges(); 
+  renderScores();
+  $("picked").textContent = S.picked || "—";
+}
+
+// Запуск при загрузке
+renderAll();
