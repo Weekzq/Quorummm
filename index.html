@@ -42,6 +42,29 @@
     </section>
 
     <section class="card">
+      <h2>Значки за активность</h2>
+      <p class="hint">Не оценки — просто отметки внимания и участия.</p>
+
+      <div class="badges-picker">
+        <label>Ученик
+          <select id="badge-student"></select>
+        </label>
+        <label>Значок
+          <select id="badge-type">
+            <option value="active">Активный ответ</option>
+            <option value="exact">Точный ответ</option>
+            <option value="team">Помог команде</option>
+            <option value="attention">Внимание</option>
+            <option value="idea">Смелая гипотеза</option>
+          </select>
+        </label>
+        <button id="give-badge" class="btn btn-primary">Дать значок</button>
+      </div>
+
+      <div id="badges-total" class="badges-total"></div>
+    </section>
+
+    <section class="card">
       <h2>Урок</h2>
       <div class="lesson">
         <div>
