@@ -1,3 +1,48 @@
+// ===== Вход для учителя =====
+const TEACHER_PASSWORD = "История";
+const AUTH_KEY = "quorum_auth";
+
+(function initAuth() {
+  const loginScreen = document.getElementById("login-screen");
+  const app = document.getElementById("app");
+  const form = document.getElementById("login-form");
+  const input = document.getElementById("login-password");
+  const error = document.getElementById("login-error");
+
+  function showApp() {
+    loginScreen.classList.add("hidden");
+    app.classList.remove("hidden");
+  }
+
+  if (sessionStorage.getItem(AUTH_KEY) === "yes") {
+    showApp();
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (input.value === TEACHER_PASSWORD) {
+      sessionStorage.setItem(AUTH_KEY, "yes");
+      error.textContent = "";
+      showApp();
+    } else {
+      error.textContent = "Неверный пароль";
+      input.value = "";
+      input.focus();
+    }
+  });
+
+  const logout = document.getElementById("logout");
+  if (logout) {
+    logout.addEventListener("click", () => {
+      sessionStorage.removeItem(AUTH_KEY);
+      app.classList.add("hidden");
+      loginScreen.classList.remove("hidden");
+      input.value = "";
+      input.focus();
+    });
+  }
+})();
+
 // ===== Хранилище =====
 const KEY = "quorum_v1";
 
