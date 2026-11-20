@@ -8,20 +8,51 @@
   <style>
     #app-screen { display: none; }
     #login-screen { display: flex; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
+  <!-- ЭКРАН ВХОДА -->
   <div id="login-screen" class="login-screen">
-    <div class="login-card">
+    <!-- Форма учителя -->
+    <div id="teacher-login-card" class="login-card">
       <div class="login-brand">Кворум</div>
       <div class="login-sub">Вход для учителя</div>
       <input id="login-password" type="password" placeholder="Пароль" autofocus>
       <button id="login-btn" class="btn btn-primary">Войти</button>
       <div id="login-error" class="login-error"></div>
+      
+      <!-- Переход к ученику -->
+      <div style="text-align: center; margin-top: 10px;">
+        <a href="#" id="show-student-login" style="color: var(--muted); font-size: 14px; text-decoration: underline;">Вход в аккаунт ученика</a>
+      </div>
+    </div>
+
+    <!-- Экран выбора ученика -->
+    <div id="student-login-card" class="login-card hidden">
+      <div class="login-brand">Кворум</div>
+      <div class="login-sub">Выбери себя из списка</div>
+      <div id="student-login-grid" class="student-login-grid" style="max-height: 400px; overflow-y: auto; margin-bottom: 16px;"></div>
+      <button id="back-to-teacher" class="btn btn-outline" style="width: 100%;">Назад</button>
+    </div>
+
+    <!-- Экран профиля ученика -->
+    <div id="student-profile-card" class="login-card hidden" style="max-width: 420px;">
+      <button id="student-logout" class="btn btn-outline" style="align-self: flex-start; margin-bottom: 10px; padding: 6px 12px; font-size: 13px;">← Выйти</button>
+      <div class="login-brand" id="sp-name">Имя</div>
+      <div class="login-sub" style="margin-bottom: 20px;">Личный кабинет</div>
+      
+      <div class="label">Мои значки</div>
+      <div id="sp-badges" class="badges-total" style="margin-bottom: 20px;"></div>
+      
+      <div class="label">Команда и баллы</div>
+      <div id="sp-team" style="font-size: 18px; font-weight: 600; margin-bottom: 6px;"></div>
+      <div id="sp-score" style="font-size: 32px; font-weight: 700; color: var(--accent);"></div>
     </div>
   </div>
 
+  <!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ (ТОЛЬКО ДЛЯ УЧИТЕЛЯ) -->
   <div id="app-screen" class="app">
     <header class="topbar">
       <div class="brand">Кворум</div>
@@ -74,27 +105,6 @@
           <button id="give-badge" class="btn btn-primary">Дать значок</button>
         </div>
         <div id="badges-total" class="badges-total"></div>
-      </section>
-
-      <section class="card">
-        <h2>Личный кабинет</h2>
-        <p class="hint">Нажми на своё имя, чтобы увидеть свои значки и команду.</p>
-        
-        <div id="student-login-list" class="student-login-grid"></div>
-
-        <div id="student-profile" style="display: none; margin-top: 20px;">
-          <button id="profile-back" class="btn btn-ghost" style="margin-bottom: 12px; padding-left: 0;">← Назад к списку</button>
-          <div class="profile-card">
-            <h3 id="profile-name" style="margin-top: 0;"></h3>
-            <p id="profile-team" style="color: var(--muted); margin-bottom: 16px;"></p>
-            
-            <div class="label">Мои значки</div>
-            <div id="profile-badges" class="badges-total" style="margin-bottom: 16px;"></div>
-            
-            <div class="label">Баллы команды</div>
-            <div id="profile-score" style="font-size: 28px; font-weight: 700; color: var(--accent);"></div>
-          </div>
-        </div>
       </section>
 
       <section class="card">
