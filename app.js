@@ -1,49 +1,45 @@
-// ===== Вход для учителя =====
+// ===== ВХОД =====
 const TEACHER_PASSWORD = "История";
-const AUTH_KEY = "quorum_auth";
+const loginScreen = document.getElementById("login-screen");
+const appScreen = document.getElementById("app-screen");
+const loginInput = document.getElementById("login-password");
+const loginError = document.getElementById("login-error");
 
-(function initAuth() {
-  const loginScreen = document.getElementById("login-screen");
-  const app = document.getElementById("app");
-  const form = document.getElementById("login-form");
-  const input = document.getElementById("login-password");
-  const error = document.getElementById("login-error");
+// Проверяем, входил ли уже (сессия)
+if (sessionStorage.getItem("quorum_auth") === "yes") {
+  loginScreen.style.display = "none";
+  appScreen.style.display = "block";
+}
 
-  function showApp() {
-    loginScreen.classList.add("hidden");
-    app.classList.remove("hidden");
+document.getElementById("login-btn").addEventListener("click", () => {
+  if (loginInput.value === TEACHER_PASSWORD) {
+    sessionStorage.setItem("quorum_auth", "yes");
+    loginScreen.style.display = "none";
+    appScreen.style.display = "block";
+    loginError.textContent = "";
+  } else {
+    loginError.textContent = "Неверный пароль";
+    loginInput.value = "";
+    loginInput.focus();
   }
+});
 
-  if (sessionStorage.getItem(AUTH_KEY) === "yes") {
-    showApp();
-  }
+// Ввод по Enter
+loginInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") document.getElementById("login-btn").click();
+});
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (input.value === TEACHER_PASSWORD) {
-      sessionStorage.setItem(AUTH_KEY, "yes");
-      error.textContent = "";
-      showApp();
-    } else {
-      error.textContent = "Неверный пароль";
-      input.value = "";
-      input.focus();
-    }
-  });
+// Кнопка Выйти
+document.getElementById("logout").addEventListener("click", () => {
+  sessionStorage.removeItem("quorum_auth");
+  appScreen.style.display = "none";
+  loginScreen.style.display = "flex";
+  loginInput.value = "";
+  loginInput.focus();
+});
 
-  const logout = document.getElementById("logout");
-  if (logout) {
-    logout.addEventListener("click", () => {
-      sessionStorage.removeItem(AUTH_KEY);
-      app.classList.add("hidden");
-      loginScreen.classList.remove("hidden");
-      input.value = "";
-      input.focus();
-    });
-  }
-})();
 
-// ===== Хранилище =====
+// ===== ОСНОВНАЯ ЛОГИКА =====
 const KEY = "quorum_v1";
 
 function load() {
@@ -64,13 +60,11 @@ function save(state) {
 
 let S = load();
 
-// ===== DOM =====
 const $ = (id) => document.getElementById(id);
 const list = $("students-list");
 const teamsBox = $("teams");
 const scoresBox = $("scores");
 
-// ===== Ученики =====
 function renderStudents() {
   list.innerHTML = S.students.map((s, i) => `
     <li>
@@ -114,7 +108,6 @@ $("save-presence").addEventListener("click", () => {
   alert("Присутствие сохранено");
 });
 
-// ===== Команды =====
 function shuffle(a) {
   const arr = a.slice();
   for (let i = arr.length - 1; i > 0; i--) {
@@ -151,7 +144,6 @@ function renderTeams() {
   `).join("");
 }
 
-// ===== Счёт =====
 function renderScores() {
   if (!S.teams.length) { scoresBox.innerHTML = ""; return; }
   scoresBox.innerHTML = S.teams.map((t, i) => `
@@ -176,7 +168,6 @@ function renderScores() {
   });
 }
 
-// ===== Значки =====
 const BADGE_ICONS = { active: "★", exact: "✓", team: "♡", attention: "◉", idea: "✦" };
 const BADGE_NAMES = {
   active: "Активный ответ",
@@ -217,7 +208,6 @@ $("give-badge").addEventListener("click", () => {
   renderBadgesTotal();
 });
 
-// ===== Выбор ученика =====
 $("pick").addEventListener("click", () => {
   const present = S.students.filter(s => s.present).map(s => s.name);
   if (!present.length) return alert("Нет отмеченных учеников");
@@ -226,7 +216,6 @@ $("pick").addEventListener("click", () => {
   $("picked").textContent = S.picked;
 });
 
-// ===== Заметка =====
 $("note").value = S.note || "";
 $("save-note").addEventListener("click", () => {
   S.note = $("note").value;
@@ -234,7 +223,6 @@ $("save-note").addEventListener("click", () => {
   alert("Заметка сохранена");
 });
 
-// ===== Общий рендер =====
 function renderAll() {
   renderStudents();
   renderTeams();
