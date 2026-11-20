@@ -12,11 +12,12 @@
 </head>
 <body>
 
+  <!-- ЭКРАН ВХОДА -->
   <div id="login-screen" class="login-screen">
     <div id="teacher-login-card" class="login-card">
       <div class="login-brand">Кворум</div>
       <div class="login-sub">Вход для учителя</div>
-      <input id="login-password" type="password" placeholder="Пароль" autofocus>
+      <input id="login-password" type="password" placeholder="Пароль">
       <button id="login-btn" class="btn btn-primary">Войти</button>
       <div id="login-error" class="login-error"></div>
       <div style="text-align: center; margin-top: 10px;">
@@ -27,8 +28,8 @@
     <div id="student-login-card" class="login-card hidden">
       <div class="login-brand">Кворум</div>
       <div class="login-sub">Вход для ученика</div>
-      <input id="student-login-input" type="text" placeholder="Твой логин" autocomplete="off">
-      <input id="student-password-input" type="password" placeholder="Твой пароль">
+      <input id="student-login-input" type="text" placeholder="Логин" autocomplete="off">
+      <input id="student-password-input" type="password" placeholder="Пароль">
       <button id="student-login-btn" class="btn btn-primary">Войти</button>
       <div id="student-login-error" class="login-error"></div>
       <div style="text-align: center; margin-top: 10px;">
@@ -40,15 +41,18 @@
       <button id="student-logout" class="btn btn-outline" style="align-self: flex-start; margin-bottom: 10px; padding: 6px 12px; font-size: 13px;">← Выйти</button>
       <div class="login-brand" id="sp-name">Имя</div>
       <div class="login-sub" style="margin-bottom: 20px;">Личный кабинет</div>
+      
       <div class="label">Мои значки</div>
       <div id="sp-badges" class="badges-total" style="margin-bottom: 20px;"></div>
+      
       <div class="label">Команда и баллы</div>
       <div id="sp-team" style="font-size: 18px; font-weight: 600; margin-bottom: 6px;"></div>
       <div id="sp-score" style="font-size: 32px; font-weight: 700; color: var(--accent);"></div>
     </div>
   </div>
 
-  <div id="app-screen" class="app">
+  <!-- ПРИЛОЖЕНИЕ УЧИТЕЛЯ -->
+  <div id="app-screen">
     <header class="topbar">
       <div class="brand">Кворум</div>
       <button id="logout" class="btn btn-ghost" style="margin-left:auto">Выйти</button>
@@ -57,7 +61,7 @@
     <main class="container">
       <section class="card">
         <h2>Ученики</h2>
-        <p class="hint" style="font-size:13px; color:#79736a; margin-bottom:8px;">Формат: <b>Имя, логин, пароль</b></p>
+        <p style="font-size:13px; color:#79736a; margin-bottom:8px;">Формат: <b>Имя, логин, пароль</b></p>
         <textarea id="names-input" rows="4" placeholder="Иванов Иван, ivan, 123"></textarea>
         <div class="row" style="margin-top:10px">
           <button id="add-names" class="btn btn-primary">Добавить</button>
