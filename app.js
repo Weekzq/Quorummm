@@ -5,14 +5,14 @@ try {
   const saved = localStorage.getItem(KEY);
   if (saved) {
     const parsed = JSON.parse(saved);
-    if (parsed.students) S = parsed;
+    if (parsed && parsed.students) S = parsed;
   }
 } catch(e) {}
 
 function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
 function $(id) { return document.getElementById(id); }
 
-// ВХОД
+// ВХОД УЧИТЕЛЯ
 $("login-btn").onclick = function() {
   if ($("login-password").value === "История") {
     $("login-screen").style.display = "none";
@@ -29,6 +29,7 @@ $("logout").onclick = function() {
   $("login-password").value = "";
 };
 
+// ВХОД УЧЕНИКА
 $("show-student-login").onclick = function(e) {
   e.preventDefault();
   $("teacher-login-card").classList.add("hidden");
@@ -45,7 +46,7 @@ $("student-login-btn").onclick = function() {
   const login = $("student-login-input").value.trim().toLowerCase();
   const pass = $("student-password-input").value.trim();
   
-  const student = S.students.find(s => s.login && s.login.toLowerCase() === login && s.pass === pass);
+  const student = S.students.find(s => s.login.toLowerCase() === login && s.pass === pass);
   
   if (student) {
     $("student-login-error").textContent = "";
@@ -82,7 +83,7 @@ function showProfile(name) {
     .join("") || "Пока нет значков";
 }
 
-// УЧЕНИКИ
+// УЧИТЕЛЬ: ДОБАВЛЕНИЕ УЧЕНИКОВ
 $("add-names").onclick = function() {
   const lines = $("names-input").value.split("\n");
   lines.forEach(line => {
