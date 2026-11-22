@@ -57,6 +57,40 @@
     
     .topbar-actions { display: flex; gap: 12px; margin-left: auto; align-items: center; }
 
+    /* Таймер в шапке */
+    .header-timer {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 12px;
+      margin-right: 16px;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--ink);
+      min-width: 100px;
+      justify-content: center;
+    }
+    .header-timer.danger {
+      color: var(--danger);
+      border-color: var(--danger);
+      background: #fdf2f2;
+    }
+    .timer-btn {
+      background: transparent;
+      border: none;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 4px 8px;
+      margin-left: 8px;
+      border-left: 1px solid var(--border);
+    }
+    .timer-btn:hover { text-decoration: underline; }
+
     /* Сетка контента */
     .container { max-width: 840px; margin: 0 auto; padding: 40px 24px; }
     
@@ -274,6 +308,31 @@
     .stat-box .value { font-size: 20px; font-weight: 700; font-family: "Manrope", sans-serif; color: var(--ink); }
     .stat-box .value.score { color: var(--accent); font-size: 28px; }
 
+    /* Таймер для ученика */
+    .student-timer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 24px;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 32px;
+      box-shadow: 0 4px 12px rgba(47, 93, 80, 0.2);
+    }
+    .student-timer.danger { background: var(--danger); box-shadow: 0 4px 12px rgba(164, 69, 59, 0.2); }
+    .student-timer .timer-label {
+      font-size: 14px;
+      font-family: "Inter", sans-serif;
+      font-weight: 500;
+      text-transform: uppercase;
+      margin-right: 16px;
+      opacity: 0.8;
+    }
+
     .profile-badges-grid {
       display: flex;
       flex-wrap: wrap;
@@ -314,6 +373,9 @@
       .lesson { grid-template-columns: 1fr; }
       .badges-picker { flex-direction: column; align-items: stretch; }
       .profile-stats { grid-template-columns: 1fr; }
+      .topbar { flex-wrap: wrap; }
+      .topbar-actions { margin-left: 0; margin-top: 12px; width: 100%; justify-content: space-between;}
+      .header-timer { margin-right: 0; width: 100%; margin-bottom: 8px;}
     }
   </style>
 </head>
@@ -349,6 +411,12 @@
     <div id="student-profile-card" class="login-card hidden" style="max-width: 480px; padding: 32px;">
       <button id="student-logout" class="btn btn-outline" style="align-self: flex-start; padding: 8px 16px; font-size: 14px; margin-bottom: 8px;">← Назад</button>
       
+      <!-- Таймер для ученика -->
+      <div id="sp-timer" class="student-timer">
+        <span class="timer-label">До конца урока</span>
+        <span id="sp-timer-display">40:00</span>
+      </div>
+
       <div class="profile-header">
         <div class="profile-avatar" id="sp-avatar">И</div>
         <div class="profile-info">
@@ -378,7 +446,14 @@
     <header class="topbar">
       <div class="brand">Кворум</div>
       <div class="sub">помощник учителя</div>
+      
       <div class="topbar-actions">
+        <!-- Таймер для учителя -->
+        <div id="teacher-timer" class="header-timer">
+          <span id="timer-display">40:00</span>
+          <button id="timer-toggle" class="timer-btn">Старт</button>
+        </div>
+
         <button id="nav-main" class="btn btn-outline" style="padding: 8px 16px; font-size: 14px; display: none;">К ученикам</button>
         <button id="show-teacher-profile" class="btn btn-outline" style="padding: 8px 16px; font-size: 14px;">Профиль</button>
         <button id="logout" class="btn btn-ghost" style="padding: 8px 16px; font-size: 14px;">Выйти</button>
@@ -487,7 +562,8 @@
   <script>
     document.body.style.display = "block";
     const KEY = "quorum_v3"; 
-    let S = { students: [], teams: [], scores: {}, picked: null, badges: {}, teacherName: "", teacherPass: "История", teacherLogin: "Petr" };
+    // Добавили timerEnd: время, когда таймер должен закончиться (0 = не запущен)
+    let S = { students: [], teams: [], scores: {}, picked: null, badges: {}, teacherName: "", teacherPass: "История", teacherLogin: "Petr", timerEnd: 0 };
     
     try {
       const saved = localStorage.getItem(KEY);
@@ -495,8 +571,8 @@
         const parsed = JSON.parse(saved); 
         if (parsed && Array.isArray(parsed.students)) {
           S = Object.assign(S, parsed);
-          // Если старые данные, добавляем логин Petr по умолчанию
           if (!S.teacherLogin) S.teacherLogin = "Petr"; 
+          if (S.timerEnd === undefined) S.timerEnd = 0;
         }
       }
     } catch(e) {}
@@ -504,16 +580,100 @@
     function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
     function $(id) { return document.getElementById(id); }
 
-    // ВХОД УЧИТЕЛЯ
+    // ===== ЛОГИКА ТАЙМЕРА (40 МИНУТ) =====
+    let timerInterval = null;
+    const LESSON_DURATION = 40 * 60 * 1000; // 40 минут в миллисекундах
+
+    function startTimer() {
+      if (S.timerEnd && S.timerEnd > Date.now()) return; // Уже идет
+      S.timerEnd = Date.now() + LESSON_DURATION;
+      save();
+      updateTimerDisplay();
+    }
+
+    function stopTimer() {
+      S.timerEnd = 0;
+      save();
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+      // 1. Обновляем для учителя в шапке
+      const tDisplay = $("timer-display");
+      const tBtn = $("timer-toggle");
+      const tBox = $("teacher-timer");
+
+      // 2. Обновляем для ученика в профиле (если открыт)
+      const sTimer = $("sp-timer");
+      const sDisplay = $("sp-timer-display");
+
+      if (!S.timerEnd || S.timerEnd === 0) {
+        // Таймер выключен
+        if(tDisplay) tDisplay.textContent = "40:00";
+        if(tBtn) tBtn.textContent = "Старт";
+        if(tBox) tBox.classList.remove("danger");
+        
+        if(sTimer) sTimer.style.display = "none"; // Скрываем у ученика, если не запущен
+        return;
+      }
+
+      const now = Date.now();
+      const diff = S.timerEnd - now;
+
+      if (diff <= 0) {
+        // Время вышло
+        if(tDisplay) tDisplay.textContent = "00:00";
+        if(tBtn) tBtn.textContent = "Сброс";
+        if(tBox) tBox.classList.add("danger");
+
+        if(sTimer) {
+          sTimer.style.display = "flex";
+          sTimer.classList.add("danger");
+          if(sDisplay) sDisplay.textContent = "00:00";
+        }
+        return;
+      }
+
+      // Считаем минуты и секунды
+      const m = Math.floor(diff / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      const timeString = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      
+      const isDanger = diff < 5 * 60 * 1000; // Меньше 5 минут
+
+      if(tDisplay) tDisplay.textContent = timeString;
+      if(tBtn) tBtn.textContent = "Сброс";
+      if(tBox) tBox.classList.toggle("danger", isDanger);
+
+      // У ученика
+      if(sTimer) {
+        sTimer.style.display = "flex";
+        sTimer.classList.toggle("danger", isDanger);
+        if(sDisplay) sDisplay.textContent = timeString;
+      }
+    }
+
+    // Запуск интервала обновления таймера раз в секунду
+    setInterval(updateTimerDisplay, 1000);
+
+    $("timer-toggle").onclick = function() {
+      if (S.timerEnd && S.timerEnd > 0) {
+        stopTimer();
+      } else {
+        startTimer();
+      }
+    };
+
+    // ===== ВХОД УЧИТЕЛЯ =====
     $("login-btn").onclick = function() {
       const inputLogin = $("login-name").value.trim();
       const inputPass = $("login-password").value;
 
-      // Проверка логина (без учета регистра) и пароля
       if (inputLogin.toLowerCase() === S.teacherLogin.toLowerCase() && inputPass === S.teacherPass) {
         $("login-screen").style.display = "none";
         $("app-screen").style.display = "block";
         showMainView(); 
+        updateTimerDisplay();
       } else { 
         $("login-error").textContent = "Неверный логин или пароль"; 
       }
@@ -600,6 +760,7 @@
         $("student-login-input").value = "";
         $("student-password-input").value = "";
         showStudentProfile(student.name);
+        updateTimerDisplay(); // Сразу показываем таймер, если он идет
       } else { 
         $("student-login-error").textContent = "Неверный логин или пароль"; 
       }
@@ -663,8 +824,8 @@
 
     $("clear-all").onclick = function() {
       if (confirm("Удалить всё?")) { 
-        S.students = []; S.teams = []; S.scores = {}; S.picked = null; S.badges = {}; 
-        save(); renderAll(); 
+        S.students = []; S.teams = []; S.scores = {}; S.picked = null; S.badges = {}; S.timerEnd = 0;
+        save(); renderAll(); updateTimerDisplay();
       }
     };
 
@@ -738,6 +899,7 @@
     function renderAll() {
       renderStudents(); renderTeams(); renderBadges(); renderScores();
       $("picked").textContent = S.picked || "—";
+      updateTimerDisplay(); // Обновляем таймер при рендере
     }
   </script>
 </body>
