@@ -11,12 +11,12 @@
   
   <style>
     :root { 
-      --bg: #f4f0e8;           /* Мягкий бежевый фон, как бумага */
-      --surface: #fbf9f4;      /* Теплый цвет для полей и блоков */
-      --ink: #1c1a17;          /* Глубокий черный текст */
-      --muted: #79736a;        /* Мягкий серо-коричневый для подписей */
-      --border: #e1dacd;       /* Тонкая бежевая обводка */
-      --accent: #2f5d50;       /* Глубокий зеленый */
+      --bg: #f4f0e8;           
+      --surface: #fbf9f4;      
+      --ink: #1c1a17;          
+      --muted: #79736a;        
+      --border: #e1dacd;       
+      --accent: #2f5d50;       
       --accent-hover: #244a40;
       --danger: #a4453b;
       --radius: 12px;          
@@ -46,7 +46,7 @@
       align-items: center; 
       padding: 16px 24px; 
       border-bottom: 1px solid var(--border); 
-      background: rgba(244, 240, 232, 0.85); /* Полупрозрачный бежевый */
+      background: rgba(244, 240, 232, 0.85);
       backdrop-filter: blur(8px);
       position: sticky; 
       top: 0; 
@@ -62,7 +62,7 @@
     
     /* Карточки */
     .card { 
-      background: #ffffff; /* Сами карточки остаются белыми для контраста */
+      background: #ffffff;
       border: 1px solid var(--border); 
       border-radius: var(--radius); 
       padding: 32px; 
@@ -324,7 +324,8 @@
     <div id="teacher-login-card" class="login-card">
       <div class="login-brand">Кворум</div>
       <div class="login-sub">Вход для учителя</div>
-      <input id="login-password" type="password" placeholder="Пароль" autofocus>
+      <input id="login-name" type="text" placeholder="Логин" autocomplete="off" style="margin-bottom: 8px;">
+      <input id="login-password" type="password" placeholder="Пароль">
       <button id="login-btn" class="btn btn-primary">Войти</button>
       <div id="login-error" class="login-error"></div>
       <div style="text-align: center; margin-top: 12px;">
@@ -486,13 +487,17 @@
   <script>
     document.body.style.display = "block";
     const KEY = "quorum_v3"; 
-    let S = { students: [], teams: [], scores: {}, picked: null, badges: {}, teacherName: "", teacherPass: "История" };
+    let S = { students: [], teams: [], scores: {}, picked: null, badges: {}, teacherName: "", teacherPass: "История", teacherLogin: "Petr" };
     
     try {
       const saved = localStorage.getItem(KEY);
       if (saved) { 
         const parsed = JSON.parse(saved); 
-        if (parsed && Array.isArray(parsed.students)) S = Object.assign(S, parsed); 
+        if (parsed && Array.isArray(parsed.students)) {
+          S = Object.assign(S, parsed);
+          // Если старые данные, добавляем логин Petr по умолчанию
+          if (!S.teacherLogin) S.teacherLogin = "Petr"; 
+        }
       }
     } catch(e) {}
 
@@ -501,16 +506,23 @@
 
     // ВХОД УЧИТЕЛЯ
     $("login-btn").onclick = function() {
-      if ($("login-password").value === S.teacherPass) {
+      const inputLogin = $("login-name").value.trim();
+      const inputPass = $("login-password").value;
+
+      // Проверка логина (без учета регистра) и пароля
+      if (inputLogin.toLowerCase() === S.teacherLogin.toLowerCase() && inputPass === S.teacherPass) {
         $("login-screen").style.display = "none";
         $("app-screen").style.display = "block";
         showMainView(); 
-      } else { $("login-error").textContent = "Неверный пароль"; }
+      } else { 
+        $("login-error").textContent = "Неверный логин или пароль"; 
+      }
     };
     
     $("logout").onclick = function() {
       $("app-screen").style.display = "none";
       $("login-screen").style.display = "flex";
+      $("login-name").value = "";
       $("login-password").value = "";
     };
 
