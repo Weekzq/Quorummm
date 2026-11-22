@@ -5,22 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Кворум — помощник учителя</title>
   
-  <!-- Строгие, чистые шрифты: Inter для интерфейса, Manrope для заголовков -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
   
   <style>
     :root { 
-      --bg: #ffffff;           /* Чистый белый фон */
-      --surface: #f8f9fa;      /* Очень светлый серый для полей */
-      --ink: #111827;          /* Глубокий черный для текста */
-      --muted: #6b7280;        /* Серый для подписей */
-      --border: #e5e7eb;       /* Тонкая обводка */
-      --accent: #047857;       /* Благородный изумрудный */
+      --bg: #ffffff;           
+      --surface: #f8f9fa;      
+      --ink: #111827;          
+      --muted: #6b7280;        
+      --border: #e5e7eb;       
+      --accent: #047857;       
       --accent-hover: #065f46;
       --danger: #dc2626;
-      --radius: 12px;          /* Мягкие скругления, но не "пузыри" */
+      --radius: 12px;          
     }
     
     * { box-sizing: border-box; }
@@ -57,7 +56,7 @@
     
     .topbar-actions { display: flex; gap: 12px; margin-left: auto; align-items: center; }
 
-    /* Сетка контента */
+    /* Контент */
     .container { max-width: 840px; margin: 0 auto; padding: 40px 24px; }
     
     /* Карточки */
@@ -72,7 +71,7 @@
     .card h2 { margin: 0 0 20px; font-size: 20px; color: var(--ink); }
     .hint { font-size: 14px; color: var(--muted); margin: -12px 0 20px; }
 
-    /* Формы и кнопки */
+    /* Формы */
     .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     
     textarea, input[type="text"], input[type="password"], input[type="number"], select { 
@@ -89,7 +88,6 @@
       transition: all 0.2s;
     }
     textarea { resize: vertical; min-height: 80px; }
-    
     textarea:focus, input:focus, select:focus { 
       border-color: var(--accent); 
       background: #fff; 
@@ -110,36 +108,18 @@
       color: var(--ink);
     }
     .btn:hover { background: var(--surface); }
-    
-    .btn-primary { 
-      background: var(--accent); 
-      color: #fff; 
-      border: none; 
-    }
+    .btn-primary { background: var(--accent); color: #fff; border: none; }
     .btn-primary:hover { background: var(--accent-hover); }
-    
     .btn-outline { background: #fff; border-color: var(--border); }
     .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-    
     .btn-ghost { color: var(--muted); border: none; background: transparent;}
     .btn-ghost:hover { background: var(--surface); color: var(--danger); }
 
-    /* Список присутствия */
+    /* Список */
     .check-list { list-style: none; padding: 0; margin: 0; }
-    .check-list li { 
-      padding: 14px 0; 
-      border-bottom: 1px solid var(--border); 
-      display: flex;
-      align-items: center;
-    }
+    .check-list li { padding: 14px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; }
     .check-list li:last-child { border-bottom: none; }
-    .check-list input[type="checkbox"] { 
-      width: 20px; 
-      height: 20px; 
-      accent-color: var(--accent); 
-      margin-right: 16px; 
-      cursor: pointer;
-    }
+    .check-list input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); margin-right: 16px; cursor: pointer; }
     .check-list label { display: flex; align-items: center; cursor: pointer; width: 100%; font-size: 16px; font-weight: 500;}
     .check-list span { color: var(--muted); font-size: 13px; margin-left: 10px; font-weight: 400; }
 
@@ -154,75 +134,27 @@
     .badges-picker { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
     .badges-picker select { margin-bottom: 0; flex: 1; min-width: 200px; }
     .badges-picker .btn { margin-bottom: 0; }
-    
     .badge-row { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border); align-items: center; }
     .badge-row:last-child { border-bottom: none; }
     .badge-row > span:first-child { font-weight: 500; font-size: 16px; }
-    .badge-chip { 
-      background: #ecfdf5; 
-      color: var(--accent); 
-      padding: 6px 12px; 
-      border-radius: 8px; 
-      font-size: 14px; 
-      display: inline-flex; 
-      align-items: center;
-      gap: 6px;
-      margin-left: 8px; 
-      font-weight: 600; 
-      border: 1px solid #d1fae5;
-    }
+    .badge-chip { background: #ecfdf5; color: var(--accent); padding: 6px 12px; border-radius: 8px; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; margin-left: 8px; font-weight: 600; border: 1px solid #d1fae5; }
 
-    /* Урок (Кто отвечает / Счёт) */
+    /* Урок */
     .lesson { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
     .label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
-    
-    .picked { 
-      font-size: 38px; 
-      font-family: "Manrope", sans-serif;
-      font-weight: 700; 
-      margin: 12px 0 24px; 
-      color: var(--accent); 
-      min-height: 54px;
-    }
-    
+    .picked { font-size: 38px; font-family: "Manrope", sans-serif; font-weight: 700; margin: 12px 0 24px; color: var(--accent); min-height: 54px; }
     .scores div { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
     .scores div:last-child { border-bottom: none; }
     .scores span:nth-child(2) { font-size: 20px; font-weight: 700; font-family: "Manrope", sans-serif; }
     .scores .ctl { display: flex; gap: 8px; }
-    
-    .scores button { 
-      width: 36px; 
-      height: 36px; 
-      border-radius: 8px; 
-      border: 1px solid var(--border); 
-      background: #fff; 
-      cursor: pointer; 
-      font-size: 18px;
-      font-weight: 600; 
-      transition: 0.1s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    .scores button { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background: #fff; cursor: pointer; font-size: 18px; font-weight: 600; transition: 0.1s; display: flex; align-items: center; justify-content: center; }
     .scores button:hover { background: var(--surface); border-color: var(--accent); }
     .scores button.plus { color: var(--accent); }
     .scores button.minus { color: var(--danger); }
 
-    /* ===== ЭКРАНЫ ВХОДА И ПРОФИЛЯ ===== */
+    /* ===== ЭКРАНЫ ВХОДА ===== */
     .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--surface); position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 24px; overflow-y: auto;}
-    .login-card { 
-      width: 100%; 
-      max-width: 380px; 
-      background: #ffffff; 
-      border: 1px solid var(--border); 
-      border-radius: 16px; 
-      padding: 40px 32px; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 16px; 
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); 
-      margin: auto;
-    }
+    .login-card { width: 100%; max-width: 380px; background: #ffffff; border: 1px solid var(--border); border-radius: 16px; padding: 40px 32px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); margin: auto; }
     .login-brand { font-size: 28px; font-weight: 700; text-align: center; color: var(--accent); letter-spacing: -0.03em;}
     .login-sub { text-align: center; color: var(--muted); font-size: 14px; margin-top: -12px; margin-bottom: 12px; font-weight: 500; }
     .login-card input { padding: 14px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0; background: var(--surface); }
@@ -230,86 +162,26 @@
     .login-error { color: var(--danger); font-size: 14px; text-align: center; min-height: 20px; font-weight: 500;}
     .hidden { display: none !important; }
 
-    /* ===== ПРОФИЛЬ (ДЛЯ УЧЕНИКА И УЧИТЕЛЯ) ===== */
-    .profile-header {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-bottom: 32px;
-      padding-bottom: 24px;
-      border-bottom: 1px solid var(--border);
-    }
-    .profile-avatar {
-      width: 64px;
-      height: 64px;
-      background: #ecfdf5;
-      color: var(--accent);
-      border: 1px solid #d1fae5;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      font-family: "Manrope", sans-serif;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
+    /* ===== ПРОФИЛЬ ===== */
+    .profile-header { display: flex; align-items: center; gap: 20px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+    .profile-avatar { width: 64px; height: 64px; background: #ecfdf5; color: var(--accent); border: 1px solid #d1fae5; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-family: "Manrope", sans-serif; font-weight: 700; flex-shrink: 0; }
     .profile-info h2 { margin: 0; font-size: 24px; line-height: 1.2; }
     .profile-info p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
-    
-    .profile-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-    .stat-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
-    }
+    .profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+    .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: center; }
     .stat-box .label { margin-bottom: 8px; font-size: 12px; }
     .stat-box .value { font-size: 20px; font-weight: 700; font-family: "Manrope", sans-serif; color: var(--ink); }
     .stat-box .value.score { color: var(--accent); font-size: 28px; }
-
-    .profile-badges-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .profile-badge {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #ffffff;
-      border: 1px solid var(--border);
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--ink);
-    }
+    .profile-badges-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+    .profile-badge { display: flex; align-items: center; gap: 10px; background: #ffffff; border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-size: 15px; font-weight: 500; color: var(--ink); }
     .profile-badge .icon { font-size: 18px; color: var(--accent); }
-    .profile-badge .count {
-      background: var(--surface);
-      padding: 2px 10px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--ink);
-      margin-left: 4px;
-    }
-
-    /* Форма в профиле учителя */
+    .profile-badge .count { background: var(--surface); padding: 2px 10px; border-radius: 6px; font-size: 14px; font-weight: 700; color: var(--ink); margin-left: 4px; }
     .profile-form { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
     .profile-form input { max-width: 300px; }
 
     /* Подвал */
     .footer { display: flex; justify-content: space-between; padding: 24px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--border); margin-top: 40px; }
 
-    /* Адаптив под телефоны */
     @media(max-width: 680px) {
       .lesson { grid-template-columns: 1fr; }
       .badges-picker { flex-direction: column; align-items: stretch; }
@@ -370,40 +242,6 @@
       <div class="label" style="margin-bottom: 16px;">Мои значки за урок</div>
       <div id="sp-badges" class="profile-badges-grid"></div>
     </div>
-
-    <!-- ПРОФИЛЬ УЧИТЕЛЯ -->
-    <div id="teacher-profile-card" class="login-card hidden" style="max-width: 520px; padding: 32px;">
-      <button id="teacher-logout" class="btn btn-outline" style="align-self: flex-start; padding: 8px 16px; font-size: 14px; margin-bottom: 8px;">← Назад</button>
-      
-      <div class="profile-header">
-        <div class="profile-avatar" id="tp-avatar">У</div>
-        <div class="profile-info">
-          <h2 class="profile-name" id="tp-name">Учитель</h2>
-          <p>Личный кабинет учителя</p>
-        </div>
-      </div>
-      
-      <div class="profile-stats">
-        <div class="stat-box">
-          <div class="label">Учеников в классе</div>
-          <div class="value" id="tp-student-count">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="label">Всего значков выдано</div>
-          <div class="value score" id="tp-badge-count">0</div>
-        </div>
-      </div>
-
-      <div class="profile-form">
-        <div class="label" style="margin-bottom: 12px;">Настройки профиля</div>
-        <input type="text" id="tp-edit-name" placeholder="Ваше имя (например, Иван Петрович)" style="margin-bottom: 12px;">
-        <button id="tp-save-name" class="btn btn-primary" style="margin-bottom: 24px;">Сохранить имя</button>
-        
-        <div class="label" style="margin-bottom: 12px;">Сменить пароль входа</div>
-        <input type="password" id="tp-new-pass" placeholder="Новый пароль" style="margin-bottom: 12px;">
-        <button id="tp-save-pass" class="btn btn-outline">Сменить пароль</button>
-      </div>
-    </div>
   </div>
 
   <!-- ПРИЛОЖЕНИЕ УЧИТЕЛЯ -->
@@ -412,12 +250,14 @@
       <div class="brand">Кворум</div>
       <div class="sub">помощник учителя</div>
       <div class="topbar-actions">
+        <button id="nav-main" class="btn btn-outline" style="padding: 8px 16px; font-size: 14px; display: none;">К ученикам</button>
         <button id="show-teacher-profile" class="btn btn-outline" style="padding: 8px 16px; font-size: 14px;">Профиль</button>
         <button id="logout" class="btn btn-ghost" style="padding: 8px 16px; font-size: 14px;">Выйти</button>
       </div>
     </header>
 
-    <main class="container">
+    <!-- ОСНОВНОЙ ЭКРАН УЧИТЕЛЯ -->
+    <main id="main-teacher-view" class="container">
       <section class="card">
         <h2>Ученики</h2>
         <p class="hint">Формат добавления: <b>Имя, логин, пароль</b> (каждый с новой строки)</p>
@@ -474,6 +314,40 @@
         </div>
       </section>
     </main>
+
+    <!-- ПРОФИЛЬ УЧИТЕЛЯ (ВНУТРИ ПРИЛОЖЕНИЯ) -->
+    <main id="teacher-profile-view" class="container hidden">
+      <div class="card" style="max-width: 520px; margin: 0 auto;">
+        <div class="profile-header">
+          <div class="profile-avatar" id="tp-avatar">У</div>
+          <div class="profile-info">
+            <h2 class="profile-name" id="tp-name">Учитель</h2>
+            <p>Личный кабинет учителя</p>
+          </div>
+        </div>
+        
+        <div class="profile-stats">
+          <div class="stat-box">
+            <div class="label">Учеников в классе</div>
+            <div class="value" id="tp-student-count">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="label">Всего значков выдано</div>
+            <div class="value score" id="tp-badge-count">0</div>
+          </div>
+        </div>
+
+        <div class="profile-form">
+          <div class="label" style="margin-bottom: 12px;">Настройки профиля</div>
+          <input type="text" id="tp-edit-name" placeholder="Ваше имя (например, Иван Петрович)" style="margin-bottom: 12px;">
+          <button id="tp-save-name" class="btn btn-primary" style="margin-bottom: 24px;">Сохранить имя</button>
+          
+          <div class="label" style="margin-bottom: 12px;">Сменить пароль входа</div>
+          <input type="password" id="tp-new-pass" placeholder="Новый пароль" style="margin-bottom: 12px;">
+          <button id="tp-save-pass" class="btn btn-outline">Сменить пароль</button>
+        </div>
+      </div>
+    </main>
     
     <footer class="footer">
       <span>Quorum · сделал Никита</span>
@@ -502,7 +376,7 @@
       if ($("login-password").value === S.teacherPass) {
         $("login-screen").style.display = "none";
         $("app-screen").style.display = "block";
-        renderAll();
+        showMainView(); // Показываем список учеников
       } else { $("login-error").textContent = "Неверный пароль"; }
     };
     
@@ -512,22 +386,27 @@
       $("login-password").value = "";
     };
 
-    // ПРОФИЛЬ УЧИТЕЛЯ
-    $("show-teacher-profile").onclick = function() {
-      $("app-screen").style.display = "none";
-      $("login-screen").style.display = "flex";
-      $("teacher-login-card").classList.add("hidden");
-      $("student-login-card").classList.add("hidden");
-      $("student-profile-card").classList.add("hidden");
-      $("teacher-profile-card").classList.remove("hidden");
+    // НАВИГАЦИЯ ВНУТРИ ПРИЛОЖЕНИЯ
+    function showMainView() {
+      $("main-teacher-view").classList.remove("hidden");
+      $("teacher-profile-view").classList.add("hidden");
+      $("nav-main").style.display = "none";
+      $("show-teacher-profile").style.display = "block";
+      renderAll();
+    }
+
+    function showProfileView() {
+      $("main-teacher-view").classList.add("hidden");
+      $("teacher-profile-view").classList.remove("hidden");
+      $("nav-main").style.display = "block";
+      $("show-teacher-profile").style.display = "none";
       renderTeacherProfile();
-    };
+    }
 
-    $("teacher-logout").onclick = function() {
-      $("teacher-profile-card").classList.add("hidden");
-      $("teacher-login-card").classList.remove("hidden");
-    };
+    $("show-teacher-profile").onclick = showProfileView;
+    $("nav-main").onclick = showMainView;
 
+    // ЛОГИКА ПРОФИЛЯ УЧИТЕЛЯ
     function renderTeacherProfile() {
       const name = S.teacherName || "Учитель";
       $("tp-name").textContent = name;
@@ -563,7 +442,6 @@
     $("show-student-login").onclick = function(e) {
       e.preventDefault();
       $("teacher-login-card").classList.add("hidden");
-      $("teacher-profile-card").classList.add("hidden");
       $("student-login-card").classList.remove("hidden");
     };
     $("back-to-teacher").onclick = function(e) {
@@ -581,7 +459,7 @@
         $("student-login-error").textContent = "";
         $("student-login-input").value = "";
         $("student-password-input").value = "";
-        showProfile(student.name);
+        showStudentProfile(student.name);
       } else { 
         $("student-login-error").textContent = "Неверный логин или пароль"; 
       }
@@ -592,7 +470,7 @@
       $("student-login-card").classList.remove("hidden");
     };
 
-    function showProfile(name) {
+    function showStudentProfile(name) {
       $("student-login-card").classList.add("hidden");
       $("student-profile-card").classList.remove("hidden");
       
