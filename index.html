@@ -47,7 +47,7 @@
 
     /* ===== ПЕРЕМЕННЫЕ НОВОГОДНЕЙ ТЕМЫ (СВЕТЛАЯ) ===== */
     body.newyear-theme {
-      --bg: #f8f9fa;           /* Светлый, почти белый фон (зимний) */
+      --bg: #f8f9fa;           
       --surface: #ffffff;      
       --card-bg: #ffffff;      
       --ink: #1c1a17;          
@@ -62,7 +62,7 @@
       --shadow: 0 4px 20px -10px rgba(0,0,0,0.05);
     }
 
-    /* ===== НОВОГОДНИЕ УКРАШЕНИЯ (ТОЛЬКО ДЛЯ ЭТОЙ ТЕМЫ) ===== */
+    /* ===== НОВОГОДНИЕ УКРАШЕНИЯ ===== */
     #snow-container {
       position: fixed;
       top: 0;
@@ -70,7 +70,7 @@
       width: 100vw;
       height: 100vh;
       pointer-events: none;
-      z-index: 1; /* Под контентом, но над фоном */
+      z-index: 1; 
       overflow: hidden;
       display: none;
     }
@@ -81,10 +81,8 @@
     .snowflake {
       position: absolute;
       top: -20px;
-      color: #a0c4b3; /* Бледно-зеленоватый, чтобы не было контраста */
-      font-size: 1.2em;
+      color: #a0c4b3; 
       pointer-events: none;
-      opacity: 0.4;
       animation: fall linear infinite;
     }
 
@@ -93,7 +91,6 @@
       100% { transform: translateY(105vh); }
     }
 
-    /* Стильная новогодняя надпись в шапке */
     .ny-logo {
       display: none;
       font-family: "Manrope", sans-serif;
@@ -708,7 +705,7 @@
     function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
     function $(id) { return document.getElementById(id); }
 
-    // ===== СНЕГ =====
+    // ===== СНЕГ (УСИЛЕННЫЙ) =====
     let snowInterval = null;
     
     function startSnow() {
@@ -717,11 +714,13 @@
       const container = $("snow-container");
       container.innerHTML = "";
       
-      for (let i = 0; i < 30; i++) {
+      // Сразу создаем много снежинок
+      for (let i = 0; i < 100; i++) {
         createSnowflake();
       }
       
-      snowInterval = setInterval(createSnowflake, 300);
+      // И продолжаем добавлять каждые 100 мс (было 300)
+      snowInterval = setInterval(createSnowflake, 100);
     }
 
     function createSnowflake() {
@@ -733,9 +732,12 @@
       snowflake.innerHTML = "❄";
       
       snowflake.style.left = Math.random() * 100 + "vw";
-      snowflake.style.animationDuration = (Math.random() * 5 + 4) + "s"; 
-      snowflake.style.opacity = Math.random() * 0.3 + 0.1; // Очень прозрачный, чтобы не мешать
-      snowflake.style.fontSize = (Math.random() * 8 + 8) + "px"; 
+      // Скорость падения от 3 до 8 секунд (было медленнее)
+      snowflake.style.animationDuration = (Math.random() * 5 + 3) + "s"; 
+      // Разный размер: от 8 до 24 пикселей
+      snowflake.style.fontSize = (Math.random() * 16 + 8) + "px"; 
+      // Прозрачность от 0.3 до 0.8
+      snowflake.style.opacity = Math.random() * 0.5 + 0.3;
       
       container.appendChild(snowflake);
       
