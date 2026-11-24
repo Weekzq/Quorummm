@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
   
   <style>
-    /* ===== ПЕРЕМЕННЫЕ СВЕТЛОЙ ТЕМЫ ===== */
+    /* ===== ПЕРЕМЕННЫЕ СВЕТЛОЙ ТЕМЫ (ПО УМОЛЧАНИЮ) ===== */
     :root { 
       --bg: #f4f0e8;           
       --surface: #fbf9f4;      
@@ -25,6 +25,7 @@
       --badge-text: #2f5d50;
       --badge-border: #cfe0d6;
       --radius: 12px;          
+      --shadow: 0 4px 20px -10px rgba(0,0,0,0.05);
     }
 
     /* ===== ПЕРЕМЕННЫЕ ТЕМНОЙ ТЕМЫ ===== */
@@ -35,12 +36,70 @@
       --ink: #f0f0f0;          
       --muted: #a0a0a0;        
       --border: #333333;       
-      --accent: #4ade80;       /* Яркий зеленый для темной темы */
+      --accent: #4ade80;       
       --accent-hover: #22c55e;
       --danger: #ef4444;
       --badge-bg: #1a3a2a;
       --badge-text: #4ade80;
       --badge-border: #2d5a42;
+      --shadow: 0 4px 20px -10px rgba(0,0,0,0.5);
+    }
+
+    /* ===== ПЕРЕМЕННЫЕ НОВОГОДНЕЙ ТЕМЫ ===== */
+    body.newyear-theme {
+      --bg: #0b1b2b;           /* Темно-синий, ночной */
+      --surface: #12293f;      /* Чуть светлее для полей */
+      --card-bg: #12293f;      /* Карточки того же цвета */
+      --ink: #f0f4f8;          /* Белый текст */
+      --muted: #8ba3b8;        /* Голубоватый серый */
+      --border: #1f3e5a;       /* Синие обводки */
+      --accent: #e84545;       /* Красный (Дед Мороз) */
+      --accent-hover: #c73a3a;
+      --danger: #ff9f43;       /* Оранжевый для опасностей */
+      --badge-bg: #1b3b5a;
+      --badge-text: #ffffff;
+      --badge-border: #2b5278;
+      --shadow: 0 4px 20px -10px rgba(232, 69, 69, 0.2);
+    }
+
+    /* ===== НОВОГОДНИЕ УКРАШЕНИЯ ===== */
+    .snowflake {
+      position: fixed;
+      top: -10px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1.2em;
+      pointer-events: none;
+      z-index: 0;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      to { transform: translateY(105vh); }
+    }
+    body.newyear-theme .brand {
+      color: #ffd700; /* Золотой бренд */
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    body.newyear-theme .login-brand {
+      color: #ffd700;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    body.newyear-theme .btn-primary {
+      background: var(--accent);
+      border: 1px solid #ffd700;
+      box-shadow: 0 0 15px rgba(232, 69, 69, 0.5);
+    }
+    body.newyear-theme .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+    body.newyear-theme .header-timer {
+      background: #0b1b2b;
+      border-color: #e84545;
+      color: #ffd700;
+    }
+    body.newyear-theme .student-timer {
+      background: #e84545;
+      border: 1px solid #ffd700;
+      box-shadow: 0 0 20px rgba(232, 69, 69, 0.5);
     }
     
     * { box-sizing: border-box; }
@@ -54,6 +113,7 @@
       display: none; 
       -webkit-font-smoothing: antialiased;
       transition: background 0.3s, color 0.3s;
+      overflow-x: hidden;
     }
 
     h1, h2, h3, .brand, .login-brand { 
@@ -74,7 +134,7 @@
       top: 0; 
       z-index: 10; 
     }
-    .brand { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: -0.03em;}
+    .brand { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: -0.03em; transition: color 0.3s;}
     .sub { color: var(--muted); font-size: 14px; margin-left: 12px; font-weight: 400;}
     
     .topbar-actions { display: flex; gap: 12px; margin-left: auto; align-items: center; }
@@ -94,6 +154,7 @@
       color: var(--ink);
       min-width: 100px;
       justify-content: center;
+      transition: all 0.3s;
     }
     .header-timer.danger {
       color: var(--danger);
@@ -114,7 +175,7 @@
     .timer-btn:hover { text-decoration: underline; }
 
     /* Сетка контента */
-    .container { max-width: 840px; margin: 0 auto; padding: 40px 24px; }
+    .container { max-width: 840px; margin: 0 auto; padding: 40px 24px; position: relative; z-index: 1;}
     
     /* Карточки */
     .card { 
@@ -123,8 +184,8 @@
       border-radius: var(--radius); 
       padding: 32px; 
       margin-bottom: 24px; 
-      box-shadow: 0 4px 20px -10px rgba(0,0,0,0.05);
-      transition: background 0.3s, border-color 0.3s;
+      box-shadow: var(--shadow);
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
     }
     .card h2 { margin: 0 0 20px; font-size: 20px; color: var(--ink); }
     .hint { font-size: 14px; color: var(--muted); margin: -12px 0 20px; }
@@ -182,37 +243,28 @@
     .btn-ghost:hover { background: var(--surface); color: var(--danger); }
 
     /* Переключатель темы */
-    .theme-toggle {
+    .theme-options {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .theme-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink);
       cursor: pointer;
       font-weight: 500;
-      color: var(--ink);
+      font-size: 14px;
+      transition: 0.2s;
     }
-    .theme-toggle input { display: none; }
-    .theme-slider {
-      width: 44px;
-      height: 24px;
-      background: var(--border);
-      border-radius: 12px;
-      position: relative;
-      transition: 0.3s;
+    .theme-btn.active {
+      border-color: var(--accent);
+      background: var(--badge-bg);
+      color: var(--accent);
+      font-weight: 700;
     }
-    .theme-slider::after {
-      content: "";
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      background: var(--card-bg);
-      border-radius: 50%;
-      top: 3px;
-      left: 3px;
-      transition: 0.3s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-    .theme-toggle input:checked + .theme-slider { background: var(--accent); }
-    .theme-toggle input:checked + .theme-slider::after { transform: translateX(20px); }
 
     /* Список присутствия */
     .check-list { list-style: none; padding: 0; margin: 0; }
@@ -379,6 +431,7 @@
       font-weight: 700;
       font-size: 32px;
       box-shadow: 0 4px 12px rgba(47, 93, 80, 0.2);
+      transition: all 0.3s;
     }
     .student-timer.danger { background: var(--danger); box-shadow: 0 4px 12px rgba(164, 69, 59, 0.2); }
     .student-timer .timer-label {
@@ -423,7 +476,7 @@
     .profile-form input { max-width: 300px; }
 
     /* Подвал */
-    .footer { display: flex; justify-content: space-between; padding: 24px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--border); margin-top: 40px; }
+    .footer { display: flex; justify-content: space-between; padding: 24px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--border); margin-top: 40px; position: relative; z-index: 1;}
 
     /* Адаптив под телефоны */
     @media(max-width: 680px) {
@@ -433,10 +486,14 @@
       .topbar { flex-wrap: wrap; }
       .topbar-actions { margin-left: 0; margin-top: 12px; width: 100%; justify-content: space-between;}
       .header-timer { margin-right: 0; width: 100%; margin-bottom: 8px;}
+      .theme-options { flex-direction: column; }
     }
   </style>
 </head>
 <body>
+
+  <!-- Снежинки для новогодней темы (появятся только при включении) -->
+  <div id="snow-container"></div>
 
   <!-- ЭКРАН ВХОДА -->
   <div id="login-screen" class="login-screen">
@@ -468,7 +525,6 @@
     <div id="student-profile-card" class="login-card hidden" style="max-width: 480px; padding: 32px;">
       <button id="student-logout" class="btn btn-outline" style="align-self: flex-start; padding: 8px 16px; font-size: 14px; margin-bottom: 8px;">← Назад</button>
       
-      <!-- Таймер для ученика -->
       <div id="sp-timer" class="student-timer">
         <span class="timer-label">До конца урока</span>
         <span id="sp-timer-display">40:00</span>
@@ -505,7 +561,6 @@
       <div class="sub">помощник учителя</div>
       
       <div class="topbar-actions">
-        <!-- Таймер для учителя -->
         <div id="teacher-timer" class="header-timer">
           <span id="timer-display">40:00</span>
           <button id="timer-toggle" class="timer-btn">Старт</button>
@@ -576,7 +631,7 @@
       </section>
     </main>
 
-    <!-- ПРОФИЛЬ УЧИТЕЛЯ (ВНУТРИ ПРИЛОЖЕНИЯ) -->
+    <!-- ПРОФИЛЬ УЧИТЕЛЯ -->
     <main id="teacher-profile-view" class="container hidden">
       <div class="card" style="max-width: 520px; margin: 0 auto;">
         <div class="profile-header">
@@ -609,11 +664,11 @@
 
           <!-- ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ -->
           <div class="label" style="margin-bottom: 12px;">Оформление</div>
-          <label class="theme-toggle">
-            <input type="checkbox" id="theme-checkbox">
-            <span class="theme-slider"></span>
-            <span>Темная тема</span>
-          </label>
+          <div class="theme-options">
+            <button class="theme-btn active" data-theme="light">Светлая</button>
+            <button class="theme-btn" data-theme="dark">Темная</button>
+            <button class="theme-btn" data-theme="newyear">Новогодняя 🎄</button>
+          </div>
         </div>
       </div>
     </main>
@@ -642,32 +697,72 @@
       }
     } catch(e) {}
 
-    // ===== ЛОГИКА ТЕМЫ =====
-    function applyTheme(theme) {
-      if (theme === "dark") {
-        document.body.classList.add("dark-theme");
-        $("theme-checkbox").checked = true;
-      } else {
-        document.body.classList.remove("dark-theme");
-        $("theme-checkbox").checked = false;
-      }
-    }
-
-    // Применяем тему при загрузке
-    applyTheme(S.theme);
-
-    // Переключатель темы
-    $("theme-checkbox").onchange = function(e) {
-      S.theme = e.target.checked ? "dark" : "light";
-      save();
-      applyTheme(S.theme);
-    };
-
     function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
     function $(id) { return document.getElementById(id); }
 
+    // ===== ЛОГИКА ТЕМ =====
+    function applyTheme(themeName) {
+      // Убираем все классы тем
+      document.body.classList.remove("dark-theme", "newyear-theme");
+      
+      // Обновляем кнопки в настройках
+      document.querySelectorAll(".theme-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.theme === themeName);
+      });
+
+      if (themeName === "dark") {
+        document.body.classList.add("dark-theme");
+        stopSnow();
+      } else if (themeName === "newyear") {
+        document.body.classList.add("newyear-theme");
+        startSnow();
+      } else {
+        stopSnow();
+      }
+    }
+
+    // Кнопки выбора темы
+    document.querySelectorAll(".theme-btn").forEach(btn => {
+      btn.onclick = function() {
+        S.theme = this.dataset.theme;
+        save();
+        applyTheme(S.theme);
+      };
+    });
+
+    // ===== СНЕЖИНКИ =====
+    let snowInterval = null;
+    function startSnow() {
+      if (snowInterval) return;
+      const container = $("snow-container");
+      container.innerHTML = "";
+      
+      snowInterval = setInterval(() => {
+        const snowflake = document.createElement("div");
+        snowflake.classList.add("snowflake");
+        snowflake.innerHTML = "❄";
+        snowflake.style.left = Math.random() * 100 + "vw";
+        snowflake.style.animationDuration = (Math.random() * 3 + 2) + "s";
+        snowflake.style.opacity = Math.random() * 0.5 + 0.3;
+        snowflake.style.fontSize = (Math.random() * 10 + 10) + "px";
+        container.appendChild(snowflake);
+        
+        setTimeout(() => { snowflake.remove(); }, 5000);
+      }, 200);
+    }
+
+    function stopSnow() {
+      if (snowInterval) {
+        clearInterval(snowInterval);
+        snowInterval = null;
+        $("snow-container").innerHTML = "";
+      }
+    }
+
+    // Применяем сохраненную тему при загрузке
+    applyTheme(S.theme);
+
     // ===== ЛОГИКА ТАЙМЕРА (40 МИНУТ) =====
-    let timerInterval = null;
     const LESSON_DURATION = 40 * 60 * 1000; 
 
     function startTimer() {
