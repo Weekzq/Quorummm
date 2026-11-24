@@ -45,24 +45,24 @@
       --shadow: 0 4px 20px -10px rgba(0,0,0,0.5);
     }
 
-    /* ===== ПЕРЕМЕННЫЕ НОВОГОДНЕЙ ТЕМЫ ===== */
+    /* ===== ПЕРЕМЕННЫЕ НОВОГОДНЕЙ ТЕМЫ (СВЕТЛАЯ) ===== */
     body.newyear-theme {
-      --bg: #0b1b2b;           
-      --surface: #12293f;      
-      --card-bg: #12293f;      
-      --ink: #f0f4f8;          
-      --muted: #8ba3b8;        
-      --border: #1f3e5a;       
-      --accent: #e84545;       
-      --accent-hover: #c73a3a;
-      --danger: #ff9f43;       
-      --badge-bg: #1b3b5a;
-      --badge-text: #ffffff;
-      --badge-border: #2b5278;
-      --shadow: 0 4px 20px -10px rgba(232, 69, 69, 0.2);
+      --bg: #f8f9fa;           /* Светлый, почти белый фон (зимний) */
+      --surface: #ffffff;      
+      --card-bg: #ffffff;      
+      --ink: #1c1a17;          
+      --muted: #79736a;        
+      --border: #e5e7eb;       
+      --accent: #2f5d50;       
+      --accent-hover: #244a40;
+      --danger: #a4453b;       
+      --badge-bg: #eaf1ec;
+      --badge-text: #2f5d50;
+      --badge-border: #cfe0d6;
+      --shadow: 0 4px 20px -10px rgba(0,0,0,0.05);
     }
 
-    /* ===== НОВОГОДНИЕ УКРАШЕНИЯ ===== */
+    /* ===== НОВОГОДНИЕ УКРАШЕНИЯ (ТОЛЬКО ДЛЯ ЭТОЙ ТЕМЫ) ===== */
     #snow-container {
       position: fixed;
       top: 0;
@@ -70,56 +70,44 @@
       width: 100vw;
       height: 100vh;
       pointer-events: none;
-      z-index: 9999; /* Снег всегда сверху */
+      z-index: 1; /* Под контентом, но над фоном */
       overflow: hidden;
-      display: none; /* По умолчанию скрыт */
+      display: none;
     }
     body.newyear-theme #snow-container {
-      display: block; /* Показываем только в новогодней теме */
+      display: block;
     }
     
     .snowflake {
       position: absolute;
       top: -20px;
-      color: #fff;
+      color: #a0c4b3; /* Бледно-зеленоватый, чтобы не было контраста */
       font-size: 1.2em;
       pointer-events: none;
-      opacity: 0.8;
-      animation: fall linear infinite, sway ease-in-out infinite alternate;
+      opacity: 0.4;
+      animation: fall linear infinite;
     }
 
     @keyframes fall {
       0% { transform: translateY(0vh); }
       100% { transform: translateY(105vh); }
     }
-    
-    @keyframes sway {
-      0% { margin-left: -10px; }
-      100% { margin-left: 10px; }
-    }
 
+    /* Стильная новогодняя надпись в шапке */
+    .ny-logo {
+      display: none;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    body.newyear-theme .ny-logo {
+      display: block;
+    }
     body.newyear-theme .brand {
-      color: #ffd700;
-      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-    }
-    body.newyear-theme .login-brand {
-      color: #ffd700;
-      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-    }
-    body.newyear-theme .btn-primary {
-      background: var(--accent);
-      border: 1px solid #ffd700;
-      box-shadow: 0 0 15px rgba(232, 69, 69, 0.5);
-    }
-    body.newyear-theme .header-timer {
-      background: #0b1b2b;
-      border-color: #e84545;
-      color: #ffd700;
-    }
-    body.newyear-theme .student-timer {
-      background: #e84545;
-      border: 1px solid #ffd700;
-      box-shadow: 0 0 20px rgba(232, 69, 69, 0.5);
+      display: none;
     }
     
     * { box-sizing: border-box; }
@@ -194,7 +182,7 @@
     .timer-btn:hover { text-decoration: underline; }
 
     /* Сетка контента */
-    .container { max-width: 840px; margin: 0 auto; padding: 40px 24px; position: relative; z-index: 1;}
+    .container { max-width: 840px; margin: 0 auto; padding: 40px 24px; position: relative; z-index: 5;}
     
     /* Карточки */
     .card { 
@@ -230,7 +218,7 @@
     textarea:focus, input:focus, select:focus { 
       border-color: var(--accent); 
       background: var(--card-bg); 
-      box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1); 
+      box-shadow: 0 0 0 3px rgba(47, 93, 80, 0.1); 
     }
     
     .btn { 
@@ -495,7 +483,7 @@
     .profile-form input { max-width: 300px; }
 
     /* Подвал */
-    .footer { display: flex; justify-content: space-between; padding: 24px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--border); margin-top: 40px; position: relative; z-index: 1;}
+    .footer { display: flex; justify-content: space-between; padding: 24px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--border); margin-top: 40px; position: relative; z-index: 10;}
 
     /* Адаптив под телефоны */
     @media(max-width: 680px) {
@@ -577,6 +565,7 @@
   <div id="app-screen" style="display:none;">
     <header class="topbar">
       <div class="brand">Кворум</div>
+      <div class="ny-logo">Happy New Year 2027</div>
       <div class="sub">помощник учителя</div>
       
       <div class="topbar-actions">
@@ -726,15 +715,13 @@
       if (snowInterval) return;
       
       const container = $("snow-container");
-      container.innerHTML = ""; // Очищаем перед запуском
+      container.innerHTML = "";
       
-      // Создаем снежинки сразу
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 30; i++) {
         createSnowflake();
       }
       
-      // И продолжаем создавать новые
-      snowInterval = setInterval(createSnowflake, 200);
+      snowInterval = setInterval(createSnowflake, 300);
     }
 
     function createSnowflake() {
@@ -745,21 +732,16 @@
       snowflake.classList.add("snowflake");
       snowflake.innerHTML = "❄";
       
-      // Случайная позиция и скорость
       snowflake.style.left = Math.random() * 100 + "vw";
-      snowflake.style.animationDuration = (Math.random() * 3 + 2) + "s"; // 2-5 секунд падения
-      snowflake.style.opacity = Math.random() * 0.5 + 0.3;
-      snowflake.style.fontSize = (Math.random() * 10 + 10) + "px"; // Разный размер
-      
-      // Случайная задержка для покачивания
-      snowflake.style.animationDelay = Math.random() * -5 + "s";
+      snowflake.style.animationDuration = (Math.random() * 5 + 4) + "s"; 
+      snowflake.style.opacity = Math.random() * 0.3 + 0.1; // Очень прозрачный, чтобы не мешать
+      snowflake.style.fontSize = (Math.random() * 8 + 8) + "px"; 
       
       container.appendChild(snowflake);
       
-      // Удаляем снежинку после падения
       setTimeout(() => { 
         if(snowflake.parentNode) snowflake.remove(); 
-      }, 5000);
+      }, 9000);
     }
 
     function stopSnow() {
@@ -798,7 +780,6 @@
       };
     });
 
-    // Применяем сохраненную тему при загрузке
     applyTheme(S.theme);
 
     // ===== ЛОГИКА ТАЙМЕРА =====
