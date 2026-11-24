@@ -10,16 +10,37 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
   
   <style>
+    /* ===== ПЕРЕМЕННЫЕ СВЕТЛОЙ ТЕМЫ ===== */
     :root { 
       --bg: #f4f0e8;           
       --surface: #fbf9f4;      
+      --card-bg: #ffffff;
       --ink: #1c1a17;          
       --muted: #79736a;        
       --border: #e1dacd;       
       --accent: #2f5d50;       
       --accent-hover: #244a40;
       --danger: #a4453b;
+      --badge-bg: #eaf1ec;
+      --badge-text: #2f5d50;
+      --badge-border: #cfe0d6;
       --radius: 12px;          
+    }
+
+    /* ===== ПЕРЕМЕННЫЕ ТЕМНОЙ ТЕМЫ ===== */
+    body.dark-theme {
+      --bg: #121212;           
+      --surface: #1e1e1e;      
+      --card-bg: #1e1e1e;      
+      --ink: #f0f0f0;          
+      --muted: #a0a0a0;        
+      --border: #333333;       
+      --accent: #4ade80;       /* Яркий зеленый для темной темы */
+      --accent-hover: #22c55e;
+      --danger: #ef4444;
+      --badge-bg: #1a3a2a;
+      --badge-text: #4ade80;
+      --badge-border: #2d5a42;
     }
     
     * { box-sizing: border-box; }
@@ -32,6 +53,7 @@
       line-height: 1.6; 
       display: none; 
       -webkit-font-smoothing: antialiased;
+      transition: background 0.3s, color 0.3s;
     }
 
     h1, h2, h3, .brand, .login-brand { 
@@ -46,7 +68,7 @@
       align-items: center; 
       padding: 16px 24px; 
       border-bottom: 1px solid var(--border); 
-      background: rgba(244, 240, 232, 0.85);
+      background: var(--bg);
       backdrop-filter: blur(8px);
       position: sticky; 
       top: 0; 
@@ -61,7 +83,7 @@
     .header-timer {
       display: flex;
       align-items: center;
-      background: #fff;
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 4px 12px;
@@ -76,7 +98,7 @@
     .header-timer.danger {
       color: var(--danger);
       border-color: var(--danger);
-      background: #fdf2f2;
+      background: rgba(164, 69, 59, 0.1);
     }
     .timer-btn {
       background: transparent;
@@ -96,12 +118,13 @@
     
     /* Карточки */
     .card { 
-      background: #ffffff;
+      background: var(--card-bg);
       border: 1px solid var(--border); 
       border-radius: var(--radius); 
       padding: 32px; 
       margin-bottom: 24px; 
       box-shadow: 0 4px 20px -10px rgba(0,0,0,0.05);
+      transition: background 0.3s, border-color 0.3s;
     }
     .card h2 { margin: 0 0 20px; font-size: 20px; color: var(--ink); }
     .hint { font-size: 14px; color: var(--muted); margin: -12px 0 20px; }
@@ -126,15 +149,15 @@
     
     textarea:focus, input:focus, select:focus { 
       border-color: var(--accent); 
-      background: #fff; 
-      box-shadow: 0 0 0 3px rgba(47, 93, 80, 0.1); 
+      background: var(--card-bg); 
+      box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1); 
     }
     
     .btn { 
       padding: 10px 20px; 
       border-radius: 8px; 
       border: 1px solid var(--border); 
-      background: #fff; 
+      background: var(--card-bg); 
       font-family: "Inter", sans-serif;
       font-weight: 500;
       cursor: pointer; 
@@ -143,20 +166,53 @@
       transition: all 0.15s;
       color: var(--ink);
     }
-    .btn:hover { background: var(--bg); }
+    .btn:hover { background: var(--surface); }
     
     .btn-primary { 
       background: var(--accent); 
       color: #fff; 
       border: none; 
     }
-    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:hover { background: var(--accent-hover); color: #fff; }
     
-    .btn-outline { background: #fff; border-color: var(--border); }
+    .btn-outline { background: var(--card-bg); border-color: var(--border); }
     .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
     
     .btn-ghost { color: var(--muted); border: none; background: transparent;}
     .btn-ghost:hover { background: var(--surface); color: var(--danger); }
+
+    /* Переключатель темы */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .theme-toggle input { display: none; }
+    .theme-slider {
+      width: 44px;
+      height: 24px;
+      background: var(--border);
+      border-radius: 12px;
+      position: relative;
+      transition: 0.3s;
+    }
+    .theme-slider::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: var(--card-bg);
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: 0.3s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .theme-toggle input:checked + .theme-slider { background: var(--accent); }
+    .theme-toggle input:checked + .theme-slider::after { transform: translateX(20px); }
 
     /* Список присутствия */
     .check-list { list-style: none; padding: 0; margin: 0; }
@@ -193,8 +249,8 @@
     .badge-row:last-child { border-bottom: none; }
     .badge-row > span:first-child { font-weight: 500; font-size: 16px; }
     .badge-chip { 
-      background: #eaf1ec; 
-      color: var(--accent); 
+      background: var(--badge-bg); 
+      color: var(--badge-text); 
       padding: 6px 12px; 
       border-radius: 8px; 
       font-size: 14px; 
@@ -203,7 +259,7 @@
       gap: 6px;
       margin-left: 8px; 
       font-weight: 600; 
-      border: 1px solid #cfe0d6;
+      border: 1px solid var(--badge-border);
     }
 
     /* Урок (Кто отвечает / Счёт) */
@@ -229,7 +285,8 @@
       height: 36px; 
       border-radius: 8px; 
       border: 1px solid var(--border); 
-      background: #fff; 
+      background: var(--card-bg); 
+      color: var(--ink);
       cursor: pointer; 
       font-size: 18px;
       font-weight: 600; 
@@ -247,7 +304,7 @@
     .login-card { 
       width: 100%; 
       max-width: 380px; 
-      background: #ffffff; 
+      background: var(--card-bg); 
       border: 1px solid var(--border); 
       border-radius: 16px; 
       padding: 40px 32px; 
@@ -259,7 +316,7 @@
     }
     .login-brand { font-size: 28px; font-weight: 700; text-align: center; color: var(--accent); letter-spacing: -0.03em;}
     .login-sub { text-align: center; color: var(--muted); font-size: 14px; margin-top: -12px; margin-bottom: 12px; font-weight: 500; }
-    .login-card input { padding: 14px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0; background: var(--surface); }
+    .login-card input { padding: 14px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0; background: var(--surface); color: var(--ink); }
     .login-card .btn { width: 100%; padding: 14px; font-size: 16px; }
     .login-error { color: var(--danger); font-size: 14px; text-align: center; min-height: 20px; font-weight: 500;}
     .hidden { display: none !important; }
@@ -276,9 +333,9 @@
     .profile-avatar {
       width: 64px;
       height: 64px;
-      background: #eaf1ec;
-      color: var(--accent);
-      border: 1px solid #cfe0d6;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      border: 1px solid var(--badge-border);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -342,7 +399,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      background: #ffffff;
+      background: var(--card-bg);
       border: 1px solid var(--border);
       padding: 10px 16px;
       border-radius: 10px;
@@ -548,7 +605,15 @@
           
           <div class="label" style="margin-bottom: 12px;">Сменить пароль входа</div>
           <input type="password" id="tp-new-pass" placeholder="Новый пароль" style="margin-bottom: 12px;">
-          <button id="tp-save-pass" class="btn btn-outline">Сменить пароль</button>
+          <button id="tp-save-pass" class="btn btn-outline" style="margin-bottom: 24px;">Сменить пароль</button>
+
+          <!-- ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ -->
+          <div class="label" style="margin-bottom: 12px;">Оформление</div>
+          <label class="theme-toggle">
+            <input type="checkbox" id="theme-checkbox">
+            <span class="theme-slider"></span>
+            <span>Темная тема</span>
+          </label>
         </div>
       </div>
     </main>
@@ -562,8 +627,7 @@
   <script>
     document.body.style.display = "block";
     const KEY = "quorum_v3"; 
-    // Добавили timerEnd: время, когда таймер должен закончиться (0 = не запущен)
-    let S = { students: [], teams: [], scores: {}, picked: null, badges: {}, teacherName: "", teacherPass: "История", teacherLogin: "Petr", timerEnd: 0 };
+    let S = { students: [], teams: [], scores: {}, picked: null, badges: {}, teacherName: "", teacherPass: "История", teacherLogin: "Petr", timerEnd: 0, theme: "light" };
     
     try {
       const saved = localStorage.getItem(KEY);
@@ -573,19 +637,41 @@
           S = Object.assign(S, parsed);
           if (!S.teacherLogin) S.teacherLogin = "Petr"; 
           if (S.timerEnd === undefined) S.timerEnd = 0;
+          if (!S.theme) S.theme = "light";
         }
       }
     } catch(e) {}
+
+    // ===== ЛОГИКА ТЕМЫ =====
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.body.classList.add("dark-theme");
+        $("theme-checkbox").checked = true;
+      } else {
+        document.body.classList.remove("dark-theme");
+        $("theme-checkbox").checked = false;
+      }
+    }
+
+    // Применяем тему при загрузке
+    applyTheme(S.theme);
+
+    // Переключатель темы
+    $("theme-checkbox").onchange = function(e) {
+      S.theme = e.target.checked ? "dark" : "light";
+      save();
+      applyTheme(S.theme);
+    };
 
     function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
     function $(id) { return document.getElementById(id); }
 
     // ===== ЛОГИКА ТАЙМЕРА (40 МИНУТ) =====
     let timerInterval = null;
-    const LESSON_DURATION = 40 * 60 * 1000; // 40 минут в миллисекундах
+    const LESSON_DURATION = 40 * 60 * 1000; 
 
     function startTimer() {
-      if (S.timerEnd && S.timerEnd > Date.now()) return; // Уже идет
+      if (S.timerEnd && S.timerEnd > Date.now()) return; 
       S.timerEnd = Date.now() + LESSON_DURATION;
       save();
       updateTimerDisplay();
@@ -598,22 +684,18 @@
     }
 
     function updateTimerDisplay() {
-      // 1. Обновляем для учителя в шапке
       const tDisplay = $("timer-display");
       const tBtn = $("timer-toggle");
       const tBox = $("teacher-timer");
 
-      // 2. Обновляем для ученика в профиле (если открыт)
       const sTimer = $("sp-timer");
       const sDisplay = $("sp-timer-display");
 
       if (!S.timerEnd || S.timerEnd === 0) {
-        // Таймер выключен
         if(tDisplay) tDisplay.textContent = "40:00";
         if(tBtn) tBtn.textContent = "Старт";
         if(tBox) tBox.classList.remove("danger");
-        
-        if(sTimer) sTimer.style.display = "none"; // Скрываем у ученика, если не запущен
+        if(sTimer) sTimer.style.display = "none"; 
         return;
       }
 
@@ -621,11 +703,9 @@
       const diff = S.timerEnd - now;
 
       if (diff <= 0) {
-        // Время вышло
         if(tDisplay) tDisplay.textContent = "00:00";
         if(tBtn) tBtn.textContent = "Сброс";
         if(tBox) tBox.classList.add("danger");
-
         if(sTimer) {
           sTimer.style.display = "flex";
           sTimer.classList.add("danger");
@@ -634,18 +714,16 @@
         return;
       }
 
-      // Считаем минуты и секунды
       const m = Math.floor(diff / 60000);
       const s = Math.floor((diff % 60000) / 1000);
       const timeString = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
       
-      const isDanger = diff < 5 * 60 * 1000; // Меньше 5 минут
+      const isDanger = diff < 5 * 60 * 1000;
 
       if(tDisplay) tDisplay.textContent = timeString;
       if(tBtn) tBtn.textContent = "Сброс";
       if(tBox) tBox.classList.toggle("danger", isDanger);
 
-      // У ученика
       if(sTimer) {
         sTimer.style.display = "flex";
         sTimer.classList.toggle("danger", isDanger);
@@ -653,7 +731,6 @@
       }
     }
 
-    // Запуск интервала обновления таймера раз в секунду
     setInterval(updateTimerDisplay, 1000);
 
     $("timer-toggle").onclick = function() {
@@ -686,7 +763,7 @@
       $("login-password").value = "";
     };
 
-    // НАВИГАЦИЯ ВНУТРИ ПРИЛОЖЕНИЯ
+    // НАВИГАЦИЯ
     function showMainView() {
       $("main-teacher-view").classList.remove("hidden");
       $("teacher-profile-view").classList.add("hidden");
@@ -706,7 +783,7 @@
     $("show-teacher-profile").onclick = showProfileView;
     $("nav-main").onclick = showMainView;
 
-    // ЛОГИКА ПРОФИЛЯ УЧИТЕЛЯ
+    // ПРОФИЛЬ УЧИТЕЛЯ
     function renderTeacherProfile() {
       const name = S.teacherName || "Учитель";
       $("tp-name").textContent = name;
@@ -760,7 +837,7 @@
         $("student-login-input").value = "";
         $("student-password-input").value = "";
         showStudentProfile(student.name);
-        updateTimerDisplay(); // Сразу показываем таймер, если он идет
+        updateTimerDisplay();
       } else { 
         $("student-login-error").textContent = "Неверный логин или пароль"; 
       }
@@ -899,7 +976,7 @@
     function renderAll() {
       renderStudents(); renderTeams(); renderBadges(); renderScores();
       $("picked").textContent = S.picked || "—";
-      updateTimerDisplay(); // Обновляем таймер при рендере
+      updateTimerDisplay();
     }
   </script>
 </body>
