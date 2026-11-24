@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
   
   <style>
-    /* ===== ПЕРЕМЕННЫЕ СВЕТЛОЙ ТЕМЫ (ПО УМОЛЧАНИЮ) ===== */
+    /* ===== ПЕРЕМЕННЫЕ СВЕТЛОЙ ТЕМЫ ===== */
     :root { 
       --bg: #f4f0e8;           
       --surface: #fbf9f4;      
@@ -47,15 +47,15 @@
 
     /* ===== ПЕРЕМЕННЫЕ НОВОГОДНЕЙ ТЕМЫ ===== */
     body.newyear-theme {
-      --bg: #0b1b2b;           /* Темно-синий, ночной */
-      --surface: #12293f;      /* Чуть светлее для полей */
-      --card-bg: #12293f;      /* Карточки того же цвета */
-      --ink: #f0f4f8;          /* Белый текст */
-      --muted: #8ba3b8;        /* Голубоватый серый */
-      --border: #1f3e5a;       /* Синие обводки */
-      --accent: #e84545;       /* Красный (Дед Мороз) */
+      --bg: #0b1b2b;           
+      --surface: #12293f;      
+      --card-bg: #12293f;      
+      --ink: #f0f4f8;          
+      --muted: #8ba3b8;        
+      --border: #1f3e5a;       
+      --accent: #e84545;       
       --accent-hover: #c73a3a;
-      --danger: #ff9f43;       /* Оранжевый для опасностей */
+      --danger: #ff9f43;       
       --badge-bg: #1b3b5a;
       --badge-text: #ffffff;
       --badge-border: #2b5278;
@@ -63,20 +63,43 @@
     }
 
     /* ===== НОВОГОДНИЕ УКРАШЕНИЯ ===== */
-    .snowflake {
+    #snow-container {
       position: fixed;
-      top: -10px;
-      color: rgba(255, 255, 255, 0.7);
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999; /* Снег всегда сверху */
+      overflow: hidden;
+      display: none; /* По умолчанию скрыт */
+    }
+    body.newyear-theme #snow-container {
+      display: block; /* Показываем только в новогодней теме */
+    }
+    
+    .snowflake {
+      position: absolute;
+      top: -20px;
+      color: #fff;
       font-size: 1.2em;
       pointer-events: none;
-      z-index: 0;
-      animation: fall linear infinite;
+      opacity: 0.8;
+      animation: fall linear infinite, sway ease-in-out infinite alternate;
     }
+
     @keyframes fall {
-      to { transform: translateY(105vh); }
+      0% { transform: translateY(0vh); }
+      100% { transform: translateY(105vh); }
     }
+    
+    @keyframes sway {
+      0% { margin-left: -10px; }
+      100% { margin-left: 10px; }
+    }
+
     body.newyear-theme .brand {
-      color: #ffd700; /* Золотой бренд */
+      color: #ffd700;
       text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
     }
     body.newyear-theme .login-brand {
@@ -87,9 +110,6 @@
       background: var(--accent);
       border: 1px solid #ffd700;
       box-shadow: 0 0 15px rgba(232, 69, 69, 0.5);
-    }
-    body.newyear-theme .btn-primary:hover {
-      background: var(--accent-hover);
     }
     body.newyear-theme .header-timer {
       background: #0b1b2b;
@@ -113,7 +133,6 @@
       display: none; 
       -webkit-font-smoothing: antialiased;
       transition: background 0.3s, color 0.3s;
-      overflow-x: hidden;
     }
 
     h1, h2, h3, .brand, .login-brand { 
@@ -373,7 +392,7 @@
     .login-error { color: var(--danger); font-size: 14px; text-align: center; min-height: 20px; font-weight: 500;}
     .hidden { display: none !important; }
 
-    /* ===== ПРОФИЛЬ (ДЛЯ УЧЕНИКА И УЧИТЕЛЯ) ===== */
+    /* ===== ПРОФИЛЬ ===== */
     .profile-header {
       display: flex;
       align-items: center;
@@ -492,7 +511,7 @@
 </head>
 <body>
 
-  <!-- Снежинки для новогодней темы (появятся только при включении) -->
+  <!-- Контейнер для снега -->
   <div id="snow-container"></div>
 
   <!-- ЭКРАН ВХОДА -->
@@ -700,12 +719,62 @@
     function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
     function $(id) { return document.getElementById(id); }
 
+    // ===== СНЕГ =====
+    let snowInterval = null;
+    
+    function startSnow() {
+      if (snowInterval) return;
+      
+      const container = $("snow-container");
+      container.innerHTML = ""; // Очищаем перед запуском
+      
+      // Создаем снежинки сразу
+      for (let i = 0; i < 50; i++) {
+        createSnowflake();
+      }
+      
+      // И продолжаем создавать новые
+      snowInterval = setInterval(createSnowflake, 200);
+    }
+
+    function createSnowflake() {
+      const container = $("snow-container");
+      if (!container) return;
+      
+      const snowflake = document.createElement("div");
+      snowflake.classList.add("snowflake");
+      snowflake.innerHTML = "❄";
+      
+      // Случайная позиция и скорость
+      snowflake.style.left = Math.random() * 100 + "vw";
+      snowflake.style.animationDuration = (Math.random() * 3 + 2) + "s"; // 2-5 секунд падения
+      snowflake.style.opacity = Math.random() * 0.5 + 0.3;
+      snowflake.style.fontSize = (Math.random() * 10 + 10) + "px"; // Разный размер
+      
+      // Случайная задержка для покачивания
+      snowflake.style.animationDelay = Math.random() * -5 + "s";
+      
+      container.appendChild(snowflake);
+      
+      // Удаляем снежинку после падения
+      setTimeout(() => { 
+        if(snowflake.parentNode) snowflake.remove(); 
+      }, 5000);
+    }
+
+    function stopSnow() {
+      if (snowInterval) {
+        clearInterval(snowInterval);
+        snowInterval = null;
+      }
+      const container = $("snow-container");
+      if(container) container.innerHTML = "";
+    }
+
     // ===== ЛОГИКА ТЕМ =====
     function applyTheme(themeName) {
-      // Убираем все классы тем
       document.body.classList.remove("dark-theme", "newyear-theme");
       
-      // Обновляем кнопки в настройках
       document.querySelectorAll(".theme-btn").forEach(btn => {
         btn.classList.toggle("active", btn.dataset.theme === themeName);
       });
@@ -721,7 +790,6 @@
       }
     }
 
-    // Кнопки выбора темы
     document.querySelectorAll(".theme-btn").forEach(btn => {
       btn.onclick = function() {
         S.theme = this.dataset.theme;
@@ -730,39 +798,10 @@
       };
     });
 
-    // ===== СНЕЖИНКИ =====
-    let snowInterval = null;
-    function startSnow() {
-      if (snowInterval) return;
-      const container = $("snow-container");
-      container.innerHTML = "";
-      
-      snowInterval = setInterval(() => {
-        const snowflake = document.createElement("div");
-        snowflake.classList.add("snowflake");
-        snowflake.innerHTML = "❄";
-        snowflake.style.left = Math.random() * 100 + "vw";
-        snowflake.style.animationDuration = (Math.random() * 3 + 2) + "s";
-        snowflake.style.opacity = Math.random() * 0.5 + 0.3;
-        snowflake.style.fontSize = (Math.random() * 10 + 10) + "px";
-        container.appendChild(snowflake);
-        
-        setTimeout(() => { snowflake.remove(); }, 5000);
-      }, 200);
-    }
-
-    function stopSnow() {
-      if (snowInterval) {
-        clearInterval(snowInterval);
-        snowInterval = null;
-        $("snow-container").innerHTML = "";
-      }
-    }
-
     // Применяем сохраненную тему при загрузке
     applyTheme(S.theme);
 
-    // ===== ЛОГИКА ТАЙМЕРА (40 МИНУТ) =====
+    // ===== ЛОГИКА ТАЙМЕРА =====
     const LESSON_DURATION = 40 * 60 * 1000; 
 
     function startTimer() {
